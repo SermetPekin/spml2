@@ -2387,7 +2387,7 @@ wheels = [
 
 [[package]]
 name = "spml2-mltools"
-version = "1.0.12"
+version = "1.0.20"
 source = { editable = "." }
 dependencies = [
     { name = "imblearn" },
@@ -2423,6 +2423,7 @@ jupyter = [
 [package.dev-dependencies]
 dev = [
     { name = "black" },
+    { name = "flake8" },
     { name = "pytest" },
     { name = "ruff" },
 ]
@@ -2457,6 +2458,7 @@ provides-extras = ["jupyter", "dev"]
 [package.metadata.requires-dev]
 dev = [
     { name = "black", specifier = ">=25.1.0" },
+    { name = "flake8", specifier = ">=7.3.0" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "ruff", specifier = ">=0.12.11" },
 ]

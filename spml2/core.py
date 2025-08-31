@@ -133,16 +133,41 @@ def evaluate_model(
     return y_pred, y_proba, metrics
 
 
+class TargetColumnNameNotFound(Exception):
+    pass
+
+
+class TargetColumnNotBinary(Exception):
+    pass
+
+
 def prepare_data(
     df: pd.DataFrame, options: Options, output_area: Any = None
 ) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
 
     print_report_initial(df, options, output_area=output_area)
-    if options.target_name not in df.columns:
-        warnings.warn(
-            f"Target name '{options.target_name}' not found in DataFrame columns. Using the first column as target."
-        )
+    target_name_was = options.target_name
+    # If target_name is None, use the first column
+    if options.target_name is None:
         options.target_name = df.columns[0]
+        msg = f"No target column specified. Using the first column: '{options.target_name}' as target."
+        warnings.warn(msg)
+        print(msg)
+        time.sleep(2)
+
+    if options.target_name not in df.columns:
+        msg = f"Target name '{options.target_name}' not found in DataFrame columns."
+        raise TargetColumnNameNotFound(msg)
+
+    # Check if the target column is suitable for binary classification
+    target_values = df[options.target_name].dropna().unique()
+    if len(target_values) != 2:
+        if target_name_was is None:
+            msg = f"Target name was not specified. Using the first column: '{options.target_name}' as target."
+        target_values_str = ", ".join(map(str, (list(target_values[0:3]) + ["..."])))
+        msg += f"\nTarget column '{options.target_name}' is not binary (unique values: {target_values_str}). Please provide a binary target column."
+        raise TargetColumnNotBinary(msg)
+
     df[options.target_name] = pd.to_numeric(df[options.target_name], downcast="integer")
     local_print_df(df.head(), output_area=output_area)
     if options.numerical_cols is None:
