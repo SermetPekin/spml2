@@ -80,5 +80,6 @@ exclude = [
     "**/*.exe",
     "**/*.egg-info/**"
 ]
+
 [project.scripts]
 spml2 = "spml2.cli:console_main"
