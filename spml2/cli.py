@@ -81,11 +81,28 @@ def get_package_file_path(filename):
 
 
 def console_main():
+    help_message = """\n\
+SPML2 Command Line Interface
+
+Usage:
+  spml2 web         # Launch the web UI
+  spml2 init        # Create example user files in the current directory
+
+Examples:
+  spml2 web
+  spml2 web --server.port 8502
+  spml2 init
+"""
     if len(sys.argv) < 2:
-        print("Usage: spml2 web or spml2 init")
+        print(help_message)
         sys.exit(1)
+
     cmd = sys.argv[1].lower()
     create_example_files()
+    if cmd in ["help", "--help", "-h"]:
+
+        print(help_message)
+        sys.exit(0)
 
     if cmd == "web":
         init_user_files()
@@ -96,6 +113,11 @@ def console_main():
     if cmd == "init":
         init_user_files()
         sys.exit(0)
+
+    # Unknown command
+    print(f"Unknown command: {cmd}\n")
+    print(help_message)
+    sys.exit(1)
 
 
 if __name__ == "__main__":
