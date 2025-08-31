@@ -1,7 +1,7 @@
 
 [project]
 name = "spml2-mltools"
-version = "1.0.17"
+version = "1.0.18"
 authors = [
     {name = "Sermet Pekin" , email = "Sermet.Pekin@gmail.com"}
 ]

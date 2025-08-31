@@ -7,10 +7,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
 
-# Third-party libraries
+# Third-party
 import numpy as np
 import pandas as pd
-import matplotlib
 from rich import print
 from sklearn.model_selection import (
     train_test_split,
@@ -29,8 +28,7 @@ from sklearn.compose import ColumnTransformer
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 
-matplotlib.use("Agg")
-# Local imports
+# Local
 from .models import models
 from .options import Options
 from .utils import (
@@ -65,7 +63,6 @@ from .feature_importances import (
 # / Local imports =============================================================
 # ================Warnings=====================================================
 warnings.filterwarnings("ignore")
-warnings.filterwarnings("ignore", message="resource_tracker:.*")
 
 
 # =================================Core Process================================
@@ -213,7 +210,7 @@ class ActionAbstract:
             save_path=folder / f"shap_force_{model.__class__.__name__}.png"
         )
 
-    def execute(self) -> None:
+    def execute(self) -> "ActionAbstract":
 
         df = self.get_df()
         if self.name == "Fresh":
@@ -318,6 +315,10 @@ class ActionAbstract:
                 output_area=self.output_area,
                 plot_area=self.plot_area,
             )
+        return self
+
+    def __call__(self, *args, **kwargs):
+        return self.execute(*args, **kwargs)
 
 
 class ActionFresh(ActionAbstract):

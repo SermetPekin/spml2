@@ -73,6 +73,8 @@ SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
 N_SPLITS = 5
 
 SHAP_PLOTS = False
+ROC_PLOTS = True
+
 
 options = Options(
     test_mode=TEST_MODE,
@@ -86,6 +88,7 @@ options = Options(
     sampling_strategy=SAMPLING_STRATEGY,
     n_splits=N_SPLITS,
     shap_plots=SHAP_PLOTS,
+    roc_plots=ROC_PLOTS,
 )
 
 

@@ -7,7 +7,6 @@ from spml2.utils_init import create_example_files
 import warnings
 
 warnings.filterwarnings("ignore")
-warnings.filterwarnings("ignore", module="pyarrow")
 
 
 def create_from_template(module_: str = "models_user", current_folder: str = "."):

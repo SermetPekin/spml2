@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 
-from spml2.parque_utils import df_to_stata
+from .parque_utils import df_to_stata
 
 
 def get_example_data() -> pd.DataFrame:

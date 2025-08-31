@@ -5,20 +5,6 @@ import time
 from typing import Any
 
 
-def get_hash(options: dict):
-    from spml2.utils_hash import options_hash_from_dict
-
-    return options_hash_from_dict(options)
-
-
-def options_hash(options):
-    if hasattr(options, "__dict__"):
-        options_dict = options.__dict__
-    else:
-        options_dict = dict(options)
-    return get_hash(options_dict)
-
-
 @dataclass
 class Options:
     def __init__(
@@ -69,13 +55,15 @@ class Options:
             time.sleep(2)
             print("Ignoring debug mode when test mode is False")
             self.debug = False
-        if self.test_mode:
-            self.batch_size = self.test_batch_size
-        else:
-            self.batch_size = None
 
     def hash(self):
-        return options_hash(self)
+        from spml2.utils_hash import options_hash_from_dict
+
+        if hasattr(self, "__dict__"):
+            options_dict = self.__dict__
+        else:
+            options_dict = dict(self)
+        return options_hash_from_dict(options_dict)
 
     def __repr__(self):
         return (
@@ -85,8 +73,10 @@ class Options:
             f"root='{self.root}', real_df_filename='{self.real_df_path.name}', "
             f"output_folder='{self.output_folder}', numerical_cols={self.numerical_cols}, "
             f"sampling_strategy='{self.sampling_strategy}', "
-            f"test_file_name='{self.test_file_name}', batch_size={self.batch_size})"
-            f"n_splits={self.n_splits}"
+            f"test_file_name='{self.test_file_name}', "
+            f"n_splits={self.n_splits}, "
+            f"shap_plots={self.shap_plots}, "
+            f"roc_plots={self.roc_plots})"
         )
 
     def __str__(self):
@@ -105,13 +95,12 @@ class Options:
         output_folder : {self.output_folder}
         numerical_cols : {self.numerical_cols}
         test_file_name : {self.test_file_name}
-        batch_size : {self.batch_size},
+        shap_plots : {self.shap_plots}
+        roc_plots : {self.roc_plots}
 
         Model options (common for all models)
         ________________________
-
         n_splits : {self.n_splits}
         sampling_strategy : {self.sampling_strategy}
-
         """
         return template

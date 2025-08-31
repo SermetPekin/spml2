@@ -1,9 +1,6 @@
 import os
 from pathlib import Path
 import pandas as pd
-import warnings
-
-warnings.filterwarnings("ignore", module="pyarrow")
 
 
 def df_to_stata(df, file_path, version=118) -> None:
