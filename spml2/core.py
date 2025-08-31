@@ -237,7 +237,7 @@ class ActionAbstract:
                     )
                     continue
             local_print(
-                f"\n{'='*50}\n Next Model : {model_name} \n{'='*50}",
+                f"\n Next Model : {model_name} \n",
                 output_area=self.output_area,
             )
             best_model, duration, best_params = self.get_best_model(
@@ -260,8 +260,17 @@ class ActionAbstract:
                     output_area=self.output_area,
                     plot_area=self.plot_area,
                 )
+            if duration is None:
+                duration = " "
+            else:
+                import datetime as dt
+
+                rounded_seconds = round(duration.total_seconds())
+                # rounded_td = dt.timedelta(seconds=rounded_seconds)
+                duration = f" : {rounded_seconds:.2f} seconds"
+
             local_print(
-                f"\n{'='*50}\n {model_name} : {duration} \n{'='*50}",
+                f"\n{model_name}{duration} \n ",
                 output_area=self.output_area,
             )
             model_results_dict = {

@@ -42,7 +42,7 @@ def local_print_df(*args, **kwargs):
             output_area.text(" ".join(map(str, args)))
         print(" ".join(map(str, args)))
     except Exception as e:
-        return local_print(*args, **kwargs)
+        return local_print(*args, output_area=output_area)
 
 
 def name_format_pip_freeze(options: Options):
