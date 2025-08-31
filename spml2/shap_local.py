@@ -30,17 +30,6 @@ class ShapAbstract(ABC):
         else:
             plt.close()
 
-    # def force_plot(self, index=0, show=True, save_path=None, **kwargs):
-    #     shap_values = self.shap_values()
-    #     force = shap.force_plot(self.explainer.expected_value, shap_values[index], self.X.iloc[index], feature_names=self.feature_names, show=show, **kwargs)
-    #     if save_path:
-    #         plt.savefig(save_path, bbox_inches='tight')
-    #     if show:
-    #         plt.show()
-    #     else:
-    #         plt.close()
-    #     return force
-
     def force_plot(self, index=0, show=True, save_path=None, **kwargs):
         shap_values = self.shap_values()
         # Handle multi-output models
