@@ -12,6 +12,7 @@ from .options import Options
 
 
 def local_print(*args, **kwargs):
+
     if "output_area" in kwargs:
         output_area = kwargs["output_area"]
     else:
