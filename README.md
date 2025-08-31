@@ -1,7 +1,7 @@
 # SPML2-mltools
-[![Pypi Windows Server](https://github.com/SermetPekin/spml2/actions/workflows/test-windows.yml/badge.svg)](https://github.com/SermetPekin/spml2_mltools/actions/workflows/test-windows.yml)
+[![Python package](https://github.com/SermetPekin/spml2/actions/workflows/package.yml/badge.svg)](https://github.com/SermetPekin/spml2/actions/workflows/package.yml)
+[![Pypi - Daily full versions](https://github.com/SermetPekin/spml2/actions/workflows/pypi-full.yml/badge.svg)](https://github.com/SermetPekin/spml2/actions/workflows/pypi-full.yml)
 
-[![Pypi Ubuntu Server](https://github.com/SermetPekin/spml2/actions/workflows/test-ubuntu.yml/badge.svg)](https://github.com/SermetPekin/spml2/actions/workflows/test-ubuntu.yml)
 
 [![PyPI](https://img.shields.io/pypi/v/spml2_mltools)](https://img.shields.io/pypi/v/spml2) 
 ![t](https://img.shields.io/badge/status-maintained-yellow.svg)   
