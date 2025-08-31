@@ -1,3 +1,4 @@
+options_content = """\n
 # --- User-editable configuration ---
 from pathlib import Path
 from spml2 import Options
@@ -32,3 +33,6 @@ options = Options(
     roc_plots=ROC_PLOTS,
 )
 print(options)
+
+
+"""

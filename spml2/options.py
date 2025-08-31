@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from dataclasses import dataclass
-
+import time
 from typing import Any
 
 
@@ -23,17 +23,17 @@ def options_hash(options):
 class Options:
     def __init__(
         self,
-        test_mode=False,
-        debug=False,
-        target_name="target",
-        test_df_size=1000,
-        root=Path("./input"),
+        test_mode: bool = False,
+        debug: bool = False,
+        target_name: str | None = None,
+        test_df_size: int = 1000,
+        root: str | Path = Path("./input"),
         real_df_filename="data.dta",
         output_folder=None,
         numerical_cols=None,
         sampling_strategy="auto",
-        n_splits=5,
-        cache=True,
+        n_splits: int = 5,
+        cache: bool = True,
         shap_plots: bool = False,
         roc_plots: bool = True,
     ):
@@ -64,7 +64,6 @@ class Options:
 
         if not self.real_df_path.exists():
             print(f"Warning: Data file does not exist: {self.real_df_path}")
-        import time
 
         if not self.test_mode and self.debug:
             time.sleep(2)

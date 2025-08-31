@@ -1,7 +1,7 @@
 
 [project]
 name = "spml2-mltools"
-version = "1.0.11"
+version = "1.0.17"
 authors = [
     {name = "Sermet Pekin" , email = "Sermet.Pekin@gmail.com"}
 ]
@@ -17,6 +17,7 @@ dependencies = [
     "pandas>=2.3.2",
     "pyarrow>=21.0.0",
     "pytest>=8.4.1",
+    "python-multipart>=0.0.20",
     "rich>=14.1.0",
     "scikit-learn>=1.6.1",
     "shap>=0.48.0",
@@ -60,7 +61,8 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["spml2"]
 [tool.hatch.build]
-include = ["spml2/**"]
+include = ["spml2/**", "spml2/templates/**"]
+
 exclude = [
     "**/tests/**",
     "**/docs/**",

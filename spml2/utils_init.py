@@ -14,4 +14,7 @@ def get_example_data() -> pd.DataFrame:
 def create_example_files(folder: str = "input") -> None:
     folder = Path(folder)
     folder.mkdir(exist_ok=True)
-    df_to_stata(get_example_data(), folder / "example.dta")
+    file_name = folder / "example.dta"
+    if not file_name.exists():
+        print(f"Creating example data file: {file_name}")
+        df_to_stata(get_example_data(), file_name)

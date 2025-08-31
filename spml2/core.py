@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
+import json
+
 import warnings
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Any
+from typing import Any, Tuple, Dict
 
 # Third-party libraries
+import numpy as np
 import pandas as pd
 import matplotlib
 from rich import print
@@ -101,18 +104,35 @@ def train_and_search(
     return random_search.best_estimator_, duration, random_search.best_params_
 
 
-def evaluate_model(model, X_test, y_test) -> tuple[pd.Series, pd.Series, dict]:
-
+def evaluate_model(
+    model: Any, X_test: pd.DataFrame, y_test: pd.Series
+) -> Tuple[np.ndarray, np.ndarray, Dict[str, Any]]:
     y_pred = model.predict(X_test)
-    y_proba = model.predict_proba(X_test)[:, 1]
+    try:
+        y_proba = model.predict_proba(X_test)
+        if y_proba.shape[1] == 2:
+            y_proba = y_proba[:, 1]
+    except AttributeError:
+        try:
+            y_proba = model.decision_function(X_test)
+        except AttributeError:
+            y_proba = None
+
     metrics = {
-        "ROC AUC": roc_auc_score(y_test, y_proba),
-        "F1 Score": f1_score(y_test, y_pred),
+        "F1 Score": f1_score(
+            y_test, y_pred, average="binary" if len(np.unique(y_test)) == 2 else "macro"
+        ),
         "Confusion Matrix": confusion_matrix(y_test, y_pred),
         "Classification Report": classification_report(
             y_test, y_pred, output_dict=True
         ),
     }
+    if y_proba is not None:
+        try:
+            metrics["ROC AUC"] = roc_auc_score(y_test, y_proba)
+        except Exception:
+            metrics["ROC AUC"] = None
+
     return y_pred, y_proba, metrics
 
 
@@ -280,10 +300,12 @@ class ActionAbstract:
                 y_test=y_test,
                 output_area=self.output_area,
             )
+            model_results_df = pd.DataFrame([model_results_dict])
+            print(model_results_df)
             save_results_individual(
                 self.df_final,
                 model_name,
-                pd.DataFrame([model_results_dict]),
+                model_results_df,
                 self.options,
             )
             results.append(model_results_dict)
@@ -323,7 +345,7 @@ class ActionCache(ActionAbstract):
         self, config, preprocessor, X_train, y_train, options, model_name
     ):
         local_print(
-            f"\n{'='*50}\n [Checkin Cache] Next model : { model_name} \n{'='*50}",
+            f"\n[Checking cache] Next model : { model_name} \n",
             output_area=self.output_area,
         )
         bucket_name = name_format_estimator(model_name, self.df_final, options)

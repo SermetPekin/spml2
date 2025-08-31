@@ -1,10 +1,11 @@
 import shap
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
+from typing import Any, Optional
 
 
 class ShapAbstract(ABC):
-    def __init__(self, model, X, feature_names=None):
+    def __init__(self, model, X, feature_names: Optional[list[str]] = None):
         self.model = model
         self.X = X
         self.feature_names = feature_names or getattr(X, "columns", None)
@@ -15,10 +16,12 @@ class ShapAbstract(ABC):
         """Return a SHAP explainer for the model."""
         pass
 
-    def shap_values(self):
+    def shap_values(self) -> Any:
         return self.explainer.shap_values(self.X)
 
-    def summary_plot(self, show=True, save_path=None, **kwargs):
+    def summary_plot(
+        self, show: bool = True, save_path: Optional[str] = None, **kwargs
+    ):
         shap_values = self.shap_values()
         shap.summary_plot(
             shap_values, self.X, feature_names=self.feature_names, show=show, **kwargs
@@ -30,7 +33,9 @@ class ShapAbstract(ABC):
         else:
             plt.close()
 
-    def force_plot(self, index=0, show=True, save_path=None, **kwargs):
+    def force_plot(
+        self, index=0, show: bool = True, save_path: Optional[str] = None, **kwargs
+    ) -> Any:
         shap_values = self.shap_values()
         # Handle multi-output models
         expected_value = self.explainer.expected_value
@@ -61,8 +66,7 @@ class ShapAbstract(ABC):
 
 
 class ShapAuto(ShapAbstract):
-    def _get_explainer(self):
-        # Try to select the best explainer based on model type
+    def _get_explainer(self) -> Any:
         import xgboost
         import lightgbm
         from sklearn.ensemble import (

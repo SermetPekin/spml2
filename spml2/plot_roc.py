@@ -2,19 +2,21 @@ from .options import Options
 from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score
+from typing import Any
+import pandas as pd
 
 
 def plot_roc_curve(
-    model_name,
-    model,
+    model_name: str,
+    model: Any,
     options: Options,
-    X_test,
-    y_test,
-    y_pred_proba=None,
-    out_name="graph_roc",
-    show=False,
-    output_area=None,
-    plot_area=None,
+    X_test: pd.Series,
+    y_test: pd.Series,
+    y_pred_proba: pd.Series | None = None,
+    out_name: str = "graph_roc",
+    show: bool = False,
+    output_area: Any = None,
+    plot_area: Any = None,
 ):
     out_folder = Path(options.output_folder) / "graphs"
     if not out_folder.exists():

@@ -3,17 +3,6 @@ from spml2.cli import init_user_files
 
 from pathlib import Path
 
-
-def test_init_user_files():
-    folder = Path(tempdir)
-    init_user_files(folder)
-
-    # Check if the user files were created
-    assert (folder / "models_user.py").exists()
-    assert (folder / "options_user.py").exists()
-    assert (folder / "spml2_main.py").exists()
-
-
 import subprocess
 import sys
 import subprocess
@@ -26,6 +15,16 @@ import os
 import signal
 
 import pytest
+
+
+def test_init_user_files():
+    folder = Path(tempdir)
+    init_user_files(folder)
+
+    # Check if the user files were created
+    assert (folder / "models_user.py").exists()
+    assert (folder / "options_user.py").exists()
+    assert (folder / "spml2_main.py").exists()
 
 
 @pytest.mark.skipif(

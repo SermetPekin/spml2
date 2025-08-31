@@ -8,6 +8,9 @@ from pathlib import Path
 from spml2.options import Options
 
 import importlib.util
+import warnings
+
+warnings.filterwarnings("ignore", module="pyarrow")
 
 
 def import_user_module(module_name, file_name):
@@ -66,6 +69,7 @@ if st.button("Quit App"):
     st.warning(
         "You can now close this tab or stop the server by pressing Ctrl+C in the terminal where Streamlit was started."
     )
+
 st.title("SPML2 User Interface")
 
 
@@ -93,7 +97,6 @@ else:
     selected_file = None
 
 workflow = st.radio("Choose workflow", ["Run fresh", "Process cache"])
-st.subheader("Current Options")
 
 current_options = {
     "test_mode": test_mode,
@@ -119,7 +122,11 @@ st.json(current_options2)
 col1, col2 = st.columns([2, 3])
 output_area = col1.empty()
 plot_area = col2.empty()
-buffer = io.StringIO()
+
+# Initialize output buffer in session state
+if "output_buffer" not in st.session_state:
+    st.session_state["output_buffer"] = ""
+
 
 from spml2.utils import get_data
 
@@ -161,6 +168,7 @@ if st.button("Run"):
                 process_cache_with_output(
                     options, MODELS, output_area=output_area, plot_area=plot_area
                 )
+
         st.success("Done!")
     else:
         st.error("Please select a file.")

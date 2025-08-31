@@ -7,8 +7,10 @@ import random
 import string
 import joblib
 from typing import Any
-
+import warnings
 from .options import Options
+
+warnings.filterwarnings("ignore", module="pyarrow")
 
 
 def local_print(*args, **kwargs):
@@ -33,6 +35,7 @@ def local_print_df(*args, **kwargs):
     try:
         for arg in args:
             if output_area is not None and isinstance(arg, pd.DataFrame):
+
                 output_area.dataframe(arg)
                 shown = True
             elif output_area is not None and isinstance(arg, pd.Series):
@@ -74,16 +77,16 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
             "ROC AUC", ascending=False
         )
     )
-    # 6. Detailed analysis of the best model
     best_model_result = results_df.loc[results_df["ROC AUC"].idxmax()]
     local_print(
         f"\n   Best Model: {best_model_result['Model']} (ROC AUC: {best_model_result['ROC AUC']:.4f})",
         output_area=output_area,
     )
-    local_print("\Detailed report:", output_area=output_area)
+    # local_print("\Detailed report:", output_area=output_area)
     report = pd.DataFrame(best_model_result["Classification Report"])
-    local_print_df(results_df, output_area=output_area)
-    local_print_df(report, output_area=output_area)
+    print(results_df)
+    print(report)
+
     if save:
         save_results(
             df, "Together", results_df, best_model_result, report, options=options
@@ -277,6 +280,7 @@ def print_report_initial(df, options: Options, output_area=None) -> None:
 =================================================================
     """
     local_print(t, output_area=output_area)
+    local_print_df(df.head(), output_area=output_area)
     time.sleep(1)
 
 
