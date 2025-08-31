@@ -106,3 +106,10 @@ cython_debug/
 input/
 Output/
 ignore*.*
+
+
+./models_user.py
+./options_user.py
+!templates/*
+!templates/options_user.py
+!templates/models_user.py
