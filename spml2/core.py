@@ -74,10 +74,7 @@ def train_and_search(
     options: Options,
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
-    """
-    Train a model pipeline with hyperparameter search.
-    Returns: best_estimator, duration, best_params
-    """
+
     imb_pipeline = ImbPipeline(
         [
             ("preprocessor", preprocessor),
@@ -105,9 +102,7 @@ def train_and_search(
 
 
 def evaluate_model(model, X_test, y_test) -> tuple[pd.Series, pd.Series, dict]:
-    """
-    Evaluate a fitted model on test data. Returns predictions, probabilities, and metrics dict.
-    """
+
     y_pred = model.predict(X_test)
     y_proba = model.predict_proba(X_test)[:, 1]
     metrics = {
@@ -124,10 +119,7 @@ def evaluate_model(model, X_test, y_test) -> tuple[pd.Series, pd.Series, dict]:
 def prepare_data(
     df: pd.DataFrame, options: Options, output_area: Any = None
 ) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
-    """
-    Prepare data: set target, infer numerical/categorical columns, split train/test.
-    Returns: X_train, X_test, y_train, y_test, categorical_cols, df
-    """
+
     print_report_initial(df, options, output_area=output_area)
     if options.target_name not in df.columns:
         warnings.warn(
@@ -151,9 +143,7 @@ def prepare_data(
 
 
 def build_preprocessor(options: Options, categorical_cols: list) -> ColumnTransformer:
-    """
-    Build a ColumnTransformer for numerical and categorical columns.
-    """
+
     return ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), options.numerical_cols),
@@ -169,11 +159,7 @@ class ActionAbstract:
     def __init__(
         self, options: Options, models: dict, output_area=None, plot_area=None
     ):
-        """
-        ActionAbstract(options, models, output_area=output_area, plot_area=plot_area)
-           ActionFresh(options, models, output_area=output_area, plot_area=plot_area)
-           ActionCache(options, models, output_area=output_area, plot_area=plot_area)
-        """
+
         self.options = options
         self.models = models
         self.output_area = output_area
@@ -208,7 +194,7 @@ class ActionAbstract:
         )
 
     def execute(self) -> None:
-        """Execute the action: prepare data, train/evaluate models, save results."""
+
         df = self.get_df()
         if self.name == "Fresh":
             save_pip_freeze(self.options)
@@ -266,7 +252,6 @@ class ActionAbstract:
                 import datetime as dt
 
                 rounded_seconds = round(duration.total_seconds())
-                # rounded_td = dt.timedelta(seconds=rounded_seconds)
                 duration = f" : {rounded_seconds:.2f} seconds"
 
             local_print(

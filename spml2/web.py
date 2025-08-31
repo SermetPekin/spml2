@@ -19,7 +19,6 @@ def import_user_module(module_name, file_name):
     return module
 
 
-# Usage in web.py
 models_user = import_user_module("models_user", "models_user.py")
 options_user = import_user_module("options_user", "options_user.py")
 
@@ -45,7 +44,7 @@ def get_hash(options: dict):
 
 
 MODELS = models_user.models
-# =============================================================
+
 test_mode = st.sidebar.checkbox("Test Mode", value=TEST_MODE)
 debug = st.sidebar.checkbox("Debug Mode", value=DEBUG)
 target_name = st.sidebar.text_input("Target Column", value=TARGET_NAME)
@@ -62,7 +61,7 @@ sampling_strategy = st.sidebar.text_input(
 )
 n_splits = st.sidebar.number_input("CV Splits", min_value=2, value=N_SPLITS)
 input_folder = st.text_input("Input folder", value=str(ROOT))
-# Quit button and message
+
 if st.button("Quit App"):
     st.warning(
         "You can now close this tab or stop the server by pressing Ctrl+C in the terminal where Streamlit was started."
@@ -70,7 +69,6 @@ if st.button("Quit App"):
 st.title("SPML2 User Interface")
 
 
-# --- Wrappers for real-time output ---
 def process_with_output(options, models, output_area, plot_area):
     from spml2.core import Process
 
@@ -105,7 +103,7 @@ current_options = {
     "root": input_folder,
     "real_df_filename": selected_file,
     "output_folder": output_folder if output_folder else None,
-    "numerical_cols": NUMERICAL_COLS,  #  [col.strip() for col in numerical_cols.split(",") if col.strip()] if numerical_cols else None,
+    "numerical_cols": NUMERICAL_COLS,
     "sampling_strategy": sampling_strategy,
     "n_splits": n_splits,
     "roc_plots": roc_plots,
@@ -128,8 +126,7 @@ from spml2.utils import get_data
 
 def get_info_df(selected_file, options):
     df = get_data(options)
-    # folder = options.root
-    # df = pd.read_stata(Path(folder) / selected_file)
+
     columns_list = df.columns.tolist()
     t = f"""
 **Shape:** {df.shape}
@@ -137,7 +134,7 @@ def get_info_df(selected_file, options):
 <summary><b>Columns ({len(columns_list)})</b></summary>
 {columns_list}
 </details>
-    """
+"""
     return t
 
 

@@ -6,10 +6,6 @@ from spml2.parque_utils import df_to_stata
 
 
 def get_example_data() -> pd.DataFrame:
-    """
-    Loads the breast cancer dataset from sklearn and returns it as a pandas DataFrame.
-    The target column is named 'target'.
-    """
     data = load_breast_cancer(as_frame=True)
     df = data.frame
     return df

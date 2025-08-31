@@ -54,11 +54,6 @@ def name_format_pip_freeze(options: Options):
 
 
 def save_pip_freeze(options: Options):
-    """
-    Save the output of 'pip freeze' to a file for reproducibility.
-    Args:
-        filepath (str): Path to save the requirements file.
-    """
     file_name = name_format_pip_freeze(options)
     try:
         result = subprocess.run(
@@ -145,15 +140,6 @@ def initial_data_check(options: Options):
 
 
 def save_df_to_parquet(df, filepath, compression="snappy"):
-    """
-    Saves a Pandas DataFrame to a Parquet file.
-    Args:
-      df: The Pandas DataFrame to save.
-      filepath: The path to the Parquet file (including the .parquet extension).
-      compression: The compression algorithm to use (default: 'snappy').
-                   Other options include 'gzip', 'brotli', 'lz4', 'zstd', or None (no compression).
-                   'snappy' is a good balance between compression ratio and speed.
-    """
     try:
         df.to_parquet(filepath, engine="pyarrow", compression=compression)
         print(f"DataFrame successfully saved to {filepath}")
@@ -208,7 +194,6 @@ def get_large_data(options: Options) -> pd.DataFrame:
 
 # ================ Helper Functions ======================
 def create_test_df(options: Options) -> None:
-    """will create test df if it doesn't exist"""
     df = get_original_data(options)
     if options.test_df_size >= len(df):
         df2 = df
@@ -343,7 +328,6 @@ def random_string(length=5):
 
 
 def save_excel(_df: pd.DataFrame, _name: Path):
-    """save_excel"""
     _name_hash = _name.with_stem(f"{_name.stem}_{random_string()}")
     try:
         _df.to_excel(_name)
@@ -361,7 +345,6 @@ def save_results(
     report: pd.DataFrame,
     options: Options,
 ):
-    """save_results"""
     items = [results_df, best_model_result, report]
     names = ["results_df", "best_model_result", "report"]
     for _df, _name in zip(items, names):
@@ -373,7 +356,6 @@ def save_results(
 def save_results_individual(
     df: pd.DataFrame, model_name, results_df: pd.DataFrame, options: Options
 ):
-    """save_results_individual"""
     for col in results_df.columns:
         if results_df[col].dtype == "object":
             results_df[col] = results_df[col].apply(
@@ -385,5 +367,4 @@ def save_results_individual(
 
 
 def limited_models(models_: dict, _name: str) -> dict:
-    """limited_models"""
     return dict([(_name, models_[_name])])

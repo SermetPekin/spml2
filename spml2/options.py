@@ -12,7 +12,6 @@ def get_hash(options: dict):
 
 
 def options_hash(options):
-    # Convert options to a dict (if it's a class/object)
     if hasattr(options, "__dict__"):
         options_dict = options.__dict__
     else:
@@ -52,7 +51,7 @@ class Options:
         self.output_folder = output_folder if output_folder else self.root / "Output"
         self.output_folder = Path(self.output_folder)
         self.numerical_cols = numerical_cols
-        # Derived/auto properties
+
         self.test_file_name = self.real_df_path.with_stem(
             f"small_df_{self.test_df_size}" + self.real_df_path.stem
         ).with_suffix(".parquet")
