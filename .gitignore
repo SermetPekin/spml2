@@ -110,6 +110,9 @@ ignore*.*
 
 ./models_user.py
 ./options_user.py
+./spml2_main.py
+
 !templates/*
 !templates/options_user.py
 !templates/models_user.py
+!templates/spml2_main.py
