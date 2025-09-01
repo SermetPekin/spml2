@@ -227,7 +227,7 @@ class ActionAbstract:
 
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
-        rows = self.options.shap_rows
+        rows = self.options.shap_sample_size
         explainer = ShapAuto(model, X.head(rows))
         explainer.summary_plot(
             save_path=folder / f"shap_summary_{model.__class__.__name__}.png"
