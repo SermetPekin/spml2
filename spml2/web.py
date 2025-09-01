@@ -5,10 +5,12 @@ import sys
 import io
 import pandas as pd
 from pathlib import Path
-from spml2.options import Options
-
 import importlib.util
 import warnings
+
+from spml2.options import Options
+from spml2.utils import get_data
+
 
 warnings.filterwarnings("ignore", module="pyarrow")
 
@@ -63,7 +65,11 @@ sampling_strategy = st.sidebar.text_input(
     "SMOTE Sampling Strategy", value=SAMPLING_STRATEGY
 )
 n_splits = st.sidebar.number_input("CV Splits", min_value=2, value=N_SPLITS)
-input_folder = st.text_input("Input folder", value=str(ROOT))
+input_folder = st.text_input(
+    "Input folder",
+    value=str(ROOT),
+    help="You can enter an absolute path here to select a different data folder.",
+)
 
 if st.button("Quit App"):
     st.warning(
@@ -126,9 +132,6 @@ plot_area = col2.empty()
 # Initialize output buffer in session state
 if "output_buffer" not in st.session_state:
     st.session_state["output_buffer"] = ""
-
-
-from spml2.utils import get_data
 
 
 def get_info_df(selected_file, options):
