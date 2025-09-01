@@ -33,7 +33,7 @@ class ShapAbstract(ABC):
         show: bool = False,
         save_path: Optional[str] = None,
         plot_type: str = "layered_violin",
-        **kwargs
+        **kwargs,
     ):
 
         shap_values = self.shap_values()
@@ -43,7 +43,7 @@ class ShapAbstract(ABC):
             feature_names=self.feature_names,
             show=show,
             plot_type=plot_type,
-            **kwargs
+            **kwargs,
         )
         if save_path:
             plt.savefig(save_path, bbox_inches="tight")

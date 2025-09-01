@@ -1,6 +1,7 @@
 def test_main():
     assert True
 
+
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import (
@@ -70,7 +71,7 @@ OUTPUT_FOLDER = "Output"  #  None  # Output folder (None = default root/Output)
 NUMERICAL_COLS = None  # List of numerical columns (None = infer from data)
 SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
 N_SPLITS = 5
-TEST_RATIO = 0.15 
+TEST_RATIO = 0.15
 SHAP_PLOTS = True
 SHAP_SAMPLE_SIZE = 50
 ROC_PLOTS = True
