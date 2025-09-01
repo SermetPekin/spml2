@@ -5,6 +5,7 @@ if [ -z "$1" ]; then
   echo "Usage: ./commit.sh \"Your commit message\""
   exit 1
 fi
+date > .trigger
 
 black .
 python -m pytest -v -x --disable-warnings spml2/tests/
