@@ -71,8 +71,9 @@ OUTPUT_FOLDER = "Output"  #  None  # Output folder (None = default root/Output)
 NUMERICAL_COLS = None  # List of numerical columns (None = infer from data)
 SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
 N_SPLITS = 5
-
-SHAP_PLOTS = False
+TEST_RATIO = 0.15 
+SHAP_PLOTS = True
+SHAP_SAMPLE_SIZE = 50
 ROC_PLOTS = True
 
 
@@ -81,6 +82,7 @@ options = Options(
     debug=DEBUG,
     target_name=TARGET_NAME,
     test_df_size=TEST_DF_SIZE,
+    test_ratio=TEST_RATIO,
     root=ROOT,
     real_df_filename=REAL_DF_FILENAME,
     output_folder=OUTPUT_FOLDER,
@@ -89,6 +91,7 @@ options = Options(
     n_splits=N_SPLITS,
     shap_plots=SHAP_PLOTS,
     roc_plots=ROC_PLOTS,
+    shap_sample_size=SHAP_SAMPLE_SIZE,
 )
 
 
