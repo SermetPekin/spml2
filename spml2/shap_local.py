@@ -2,6 +2,7 @@ import shap
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 from typing import Any, Optional
+from pathlib import Path
 
 
 class ShapAbstract(ABC):
@@ -9,6 +10,8 @@ class ShapAbstract(ABC):
         self.model = model
         self.X = X
         self.feature_names = feature_names or getattr(X, "columns", None)
+        self.shap_vals = None
+
         self.explainer = self._get_explainer()
 
     @abstractmethod
@@ -16,53 +19,39 @@ class ShapAbstract(ABC):
         """Return a SHAP explainer for the model."""
         pass
 
-    def shap_values(self) -> Any:
+    def shap_values_helper(self):
         return self.explainer.shap_values(self.X)
 
+    def shap_values(self) -> Any:
+        if self.shap_vals is None:
+            self.shap_vals = self.shap_values_helper()
+
+        return self.shap_vals
+
     def summary_plot(
-        self, show: bool = True, save_path: Optional[str] = None, **kwargs
+        self,
+        show: bool = False,
+        save_path: Optional[str] = None,
+        plot_type: str = "layered_violin",
+        **kwargs
     ):
+
         shap_values = self.shap_values()
         shap.summary_plot(
-            shap_values, self.X, feature_names=self.feature_names, show=show, **kwargs
-        )
-        if save_path:
-            plt.savefig(save_path, bbox_inches="tight")
-        if show:
-            plt.show()
-        else:
-            plt.close()
-
-    def force_plot(
-        self, index=0, show: bool = True, save_path: Optional[str] = None, **kwargs
-    ) -> Any:
-        shap_values = self.shap_values()
-        # Handle multi-output models
-        expected_value = self.explainer.expected_value
-        if hasattr(expected_value, "__len__") and not isinstance(expected_value, str):
-            base_value = expected_value[0]
-            shap_val = (
-                shap_values[index][..., 0]
-                if shap_values[index].ndim > 1
-                else shap_values[index]
-            )
-        else:
-            base_value = expected_value
-            shap_val = shap_values[index]
-        force = shap.plots.force(
-            base_value,
-            shap_val,
-            self.X.iloc[index],
+            shap_values,
+            self.X,
             feature_names=self.feature_names,
-            **kwargs,
+            show=show,
+            plot_type=plot_type,
+            **kwargs
         )
         if save_path:
             plt.savefig(save_path, bbox_inches="tight")
+            plt.close()
         if show:
             plt.show()
         else:
             plt.close()
-        return force
 
 
 class ShapAuto(ShapAbstract):
