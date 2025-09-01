@@ -3,6 +3,13 @@ import os
 from dataclasses import dataclass
 import time
 from typing import Any
+from typing import TypeAlias
+
+from imblearn.pipeline import Pipeline as ImbPipeline
+
+PathStr: TypeAlias = str | Path
+FloatStr: TypeAlias = float | str
+SequenceStr: TypeAlias = list[str] | tuple[str, ...]
 
 
 @dataclass
@@ -14,40 +21,48 @@ class Options:
         target_name: str | None = None,
         test_df_size: int = 1000,
         test_ratio: float = 0.20,
-        root: str | Path = Path("./input"),
-        real_df_filename="data.dta",
-        output_folder=None,
+        root: PathStr = Path("./input"),
+        real_df_filename="example.dta",
+        output_folder: PathStr = None,
         numerical_cols=None,
-        sampling_strategy="auto",
+        sampling_strategy: FloatStr = "auto",
         n_splits: int = 5,
         cache: bool = True,
         shap_plots: bool = False,
         roc_plots: bool = True,
         shap_sample_size: int = 100,
+        pipeline: ImbPipeline | None = None,
+        # search_type
+        search_type: str = "random",
+        # search_kwargs
+        search_kwargs: dict | None = None,
     ):
-        self.test_ratio = test_ratio
-        self.shap_sample_size = shap_sample_size
-        self.roc_plots = roc_plots
-        self.shap_plots = shap_plots
-        self.n_splits = n_splits
-        self.cache = cache
-        self.sampling_strategy = sampling_strategy
-        self.test_mode = test_mode
-        self.debug = debug
-        self.target_name = target_name
-        self.test_df_size = test_df_size
-        self.root = Path(root)
-        self.real_df_path = self.root / real_df_filename
-        self.output_folder = output_folder if output_folder else self.root / "Output"
-        self.output_folder = Path(self.output_folder)
-        self.numerical_cols = numerical_cols
+        self.search_type: str = search_type
+        self.search_kwargs: dict | None = search_kwargs
+        self.pipeline: ImbPipeline | None = pipeline
+        self.test_ratio: float = test_ratio
+        self.shap_sample_size: int = shap_sample_size
+        self.roc_plots: bool = roc_plots
+        self.shap_plots: bool = shap_plots
+        self.n_splits: int = n_splits
+        self.cache: bool = cache
+        self.sampling_strategy: FloatStr = sampling_strategy
+        self.test_mode: bool = test_mode
+        self.debug: bool = debug
+        self.target_name: str | None = target_name
+        self.test_df_size: int = test_df_size
+        self.root: Path = Path(root)
+        self.real_df_path: Path = self.root / real_df_filename
+        self.output_folder: Path = (
+            output_folder if output_folder else self.root / "Output"
+        )
+        self.output_folder: Path = Path(self.output_folder)
+        self.numerical_cols: SequenceStr | None = numerical_cols
 
-        self.test_file_name = self.real_df_path.with_stem(
+        self.test_file_name: Path = self.real_df_path.with_stem(
             f"small_df_{self.test_df_size}" + self.real_df_path.stem
         ).with_suffix(".parquet")
-        self.test_batch_size = self.test_df_size // 5
-        self.size = self.test_df_size // 2 if self.test_mode else None
-        self.train_size = self.size // 2 if self.size else None
+
         if not self.output_folder.exists():
             os.makedirs(self.output_folder)
         self.real_df_path = Path(self.real_df_path)

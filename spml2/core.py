@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-import json
-
+import copy
 import warnings
 import time
 from datetime import datetime
@@ -27,6 +26,10 @@ from sklearn.metrics import (
 from sklearn.compose import ColumnTransformer
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
+from sklearn.model_selection import GridSearchCV
+
+from typing import Literal
+
 
 # Local
 from .models import models
@@ -63,9 +66,34 @@ from .feature_importances import (
 # / Local imports =============================================================
 # ================Warnings=====================================================
 warnings.filterwarnings("ignore")
-
-
 # =================================Core Process================================
+
+
+def get_search_type(
+    options: Options, param_grid: dict
+) -> RandomizedSearchCV | GridSearchCV:
+    search_type = getattr(options, "search_type", "random")
+    search_kwargs = (getattr(options, "search_kwargs", None) or {}).copy()
+
+    default_kwargs = {
+        "cv": StratifiedKFold(n_splits=options.n_splits, shuffle=True, random_state=42),
+        "scoring": "roc_auc",
+        "verbose": 1,
+        "n_jobs": -1,
+        "error_score": "raise",
+    }
+    search_kwargs.update(default_kwargs)
+
+    if search_type == "random":
+        search = RandomizedSearchCV(options.pipeline, param_grid, **search_kwargs)
+    elif search_type == "grid":
+        search = GridSearchCV(options.pipeline, param_grid, **search_kwargs)
+    else:
+        # fallback to random search
+        search = RandomizedSearchCV(options.pipeline, param_grid, **search_kwargs)
+    return search
+
+
 def train_and_search(
     model: Any,
     preprocessor: Any,
@@ -74,31 +102,41 @@ def train_and_search(
     options: Options,
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
+    if isinstance(options.pipeline, ImbPipeline):
+        options._given_pipeline = copy.deepcopy(options.pipeline)
+    else:
+        options._given_pipeline = None
 
-    imb_pipeline = ImbPipeline(
-        [
-            ("preprocessor", preprocessor),
-            (
-                "smote",
-                SMOTE(random_state=42, sampling_strategy=options.sampling_strategy),
-            ),
-            ("model", model),
-        ]
-    )
-    random_search = RandomizedSearchCV(
-        imb_pipeline,
-        param_grid,
-        cv=StratifiedKFold(n_splits=options.n_splits, shuffle=True, random_state=42),
-        scoring="roc_auc",
-        verbose=1,
-        n_jobs=-1,
-        error_score="raise",
-    )
+    if options._given_pipeline is None:
+        options.pipeline = ImbPipeline(
+            [
+                ("preprocessor", preprocessor),
+                (
+                    "smote",
+                    SMOTE(random_state=42, sampling_strategy=options.sampling_strategy),
+                ),
+                ("model", model),
+            ]
+        )
+    else:
+        steps = options.pipeline.steps
+        if steps and steps[-1][0] == "model":
+            steps[-1] = ("model", model)
+        else:
+            steps.append(("model", model))
+        options.pipeline = ImbPipeline(steps)
+
+    if not isinstance(options.pipeline, ImbPipeline):
+        raise ValueError(
+            f"Pipeline is not an instance of ImbPipeline. Got {type(options.pipeline)}"
+        )
+
+    search = get_search_type(options, param_grid)
     start = datetime.now()
-    random_search.fit(X_train, y_train)
+    search.fit(X_train, y_train)
     end = datetime.now()
     duration = end - start
-    return random_search.best_estimator_, duration, random_search.best_params_
+    return search.best_estimator_, duration, search.best_params_
 
 
 def evaluate_model(
@@ -182,7 +220,6 @@ def prepare_data(
         X,
         y,
         test_size=options.test_ratio,
-        train_size=options.train_size,
         random_state=42,
         stratify=y,
     )

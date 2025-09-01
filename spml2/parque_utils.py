@@ -29,8 +29,10 @@ def create_parque_files_for_folder(folder: str | Path) -> None:
 
 
 def save_df_to_parquet(
-    df: pd.DataFrame, filepath: Path, compression: str = "snappy"
+    df: pd.DataFrame, filepath: Path | str, compression: str = "snappy"
 ) -> None:
+    if isinstance(filepath, str):
+        filepath = Path(filepath)
     try:
         df.to_parquet(filepath, engine="pyarrow", compression=compression)
         print(f"DataFrame successfully saved to {filepath}")

@@ -275,7 +275,7 @@ def print_report_initial(df, options: Options, output_area=None) -> None:
     File to be used : {file_name}
     Rows  : {rows}
     Columns  : {cols}
-    train size :  = {options.train_size}
+    test ratio :  = {options.test_ratio}
 =================================================================
     """
     local_print(t, output_area=output_area)

@@ -3,15 +3,21 @@ import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 from pathlib import Path
+from typing import Callable, TypeVar, Literal, Protocol
+import pandas as pd
+import numpy as np
+
+ArrayLike = np.ndarray | pd.DataFrame | pd.Series
 
 
 class ShapAbstract(ABC):
-    def __init__(self, model, X, feature_names: Optional[list[str]] = None):
+    def __init__(
+        self, model: Any, X: ArrayLike, feature_names: Optional[list[str]] = None
+    ):
         self.model = model
         self.X = X
         self.feature_names = feature_names or getattr(X, "columns", None)
         self.shap_vals = None
-
         self.explainer = self._get_explainer()
 
     @abstractmethod
@@ -85,7 +91,7 @@ class ShapAuto(ShapAbstract):
         elif isinstance(self.model, (LogisticRegression, LinearRegression)):
             return shap.LinearExplainer(self.model, self.X)
         else:
-            # Fallback to KernelExplainer (works for most models, but slower)
+            # Fallback to KernelExplainer
             return shap.KernelExplainer(self.model.predict, self.X)
 
 
