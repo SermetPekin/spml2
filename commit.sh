@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
   echo "Usage: ./commit.sh \"Your commit message\""
   exit 1
 fi
-
+date > .trigger
 black .
 
 git add .

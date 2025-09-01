@@ -2,7 +2,7 @@
 set -e  # Exit on error
 
 if [ -z "$1" ] || [ -z "$2" ]; then
-  echo "Usage: ./ignore_pub.sh v1.0.20 \"Fix typos\""
+  echo "Usage: ./publish.sh v1.0.23 \"Fix typos\""
   exit 1
 fi
 

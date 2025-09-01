@@ -1,7 +1,7 @@
 
 [project]
 name = "spml2-mltools"
-version = "1.0.22"
+version = "1.0.23"
 authors = [
     {name = "Sermet Pekin" , email = "Sermet.Pekin@gmail.com"}
 ]
@@ -83,3 +83,4 @@ exclude = [
 
 [project.scripts]
 spml2 = "spml2.cli:console_main"
+spml = "spml2.cli:console_main"
