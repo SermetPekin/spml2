@@ -9,6 +9,8 @@ TEST_MODE = False  # Enable test mode for quick runs
 DEBUG = False  # Enable debug mode for extra checks
 TARGET_NAME = "target"  # Name of the target column
 TEST_DF_SIZE = 1000  # Number of rows for test DataFrame
+TEST_RATIO = 0.20  # Proportion of the dataset to include in the test split
+
 ROOT = Path("./input")  # Root directory for data
 REAL_DF_FILENAME = "example.dta"  # Main data file name (must be .dta)
 OUTPUT_FOLDER = "Output"  #  None  # Output folder (None = default root/Output)
@@ -24,6 +26,7 @@ options = Options(
     debug=DEBUG,
     target_name=TARGET_NAME,
     test_df_size=TEST_DF_SIZE,
+    test_ratio=TEST_RATIO,
     root=ROOT,
     real_df_filename=REAL_DF_FILENAME,
     output_folder=OUTPUT_FOLDER,
