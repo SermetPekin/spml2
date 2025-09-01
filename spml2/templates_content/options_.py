@@ -16,6 +16,7 @@ NUMERICAL_COLS = None  # List of numerical columns (None = infer from data)
 SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
 N_SPLITS = 5
 SHAP_PLOTS = False  # Enable SHAP plots
+SHAP_SAMPLE_SIZE = 100  # Number of samples for SHAP plots
 ROC_PLOTS = True
 
 options = Options(
@@ -31,6 +32,7 @@ options = Options(
     n_splits=N_SPLITS,
     shap_plots=SHAP_PLOTS,
     roc_plots=ROC_PLOTS,
+    shap_sample_size=SHAP_SAMPLE_SIZE,
 )
 print(options)
 

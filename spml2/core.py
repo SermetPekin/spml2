@@ -220,14 +220,15 @@ class ActionAbstract:
             result_name = f"repeated_{result_name}"
         return result_name
 
-    def shap_plots(self, model, X):
+    def shap_plots(self, model: Any, X: pd.DataFrame):
         if not self.options.shap_plots:
             return
         from .shap_local import ShapTree, ShapLinear, ShapAuto
 
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
-        explainer = ShapAuto(model, X.head(100))
+        rows = self.options.shap_rows
+        explainer = ShapAuto(model, X.head(rows))
         explainer.summary_plot(
             save_path=folder / f"shap_summary_{model.__class__.__name__}.png"
         )

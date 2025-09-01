@@ -22,7 +22,9 @@ class Options:
         cache: bool = True,
         shap_plots: bool = False,
         roc_plots: bool = True,
+        shap_sample_size: int = 100,
     ):
+        self.shap_sample_size = shap_sample_size
         self.roc_plots = roc_plots
         self.shap_plots = shap_plots
         self.n_splits = n_splits

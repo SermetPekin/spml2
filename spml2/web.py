@@ -39,6 +39,7 @@ from options_user import (
     ROOT,
     SHAP_PLOTS,
     ROC_PLOTS,
+    SHAP_SAMPLE_SIZE,
 )
 
 
@@ -55,6 +56,9 @@ debug = st.sidebar.checkbox("Debug Mode", value=DEBUG)
 target_name = st.sidebar.text_input("Target Column", value=TARGET_NAME)
 roc_plots = st.sidebar.checkbox("ROC Plots", value=ROC_PLOTS)
 shap_plots = st.sidebar.checkbox("SHAP Plots", value=SHAP_PLOTS)
+shap_sample_size = st.sidebar.number_input(
+    "SHAP Sample Size", min_value=1, value=SHAP_SAMPLE_SIZE
+)
 test_df_size = st.sidebar.number_input(
     "Test DataFrame Size", min_value=1, value=TEST_DF_SIZE
 )

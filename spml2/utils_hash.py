@@ -5,7 +5,14 @@ from typing import Any
 
 def options_hash_from_dict(options_dict: dict[str, Any]) -> str:
     opts = options_dict.copy()
-    keys = ["roc_plots", "shap_plots", "output_folder", "debug", "cache"]
+    keys = [
+        "roc_plots",
+        "shap_plots",
+        "output_folder",
+        "debug",
+        "cache",
+        "shap_sample_size",
+    ]
     for key in keys:
         if key in opts:
             del opts[key]
