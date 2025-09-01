@@ -13,6 +13,7 @@ class Options:
         debug: bool = False,
         target_name: str | None = None,
         test_df_size: int = 1000,
+        test_ratio: float = 0.20,
         root: str | Path = Path("./input"),
         real_df_filename="data.dta",
         output_folder=None,
@@ -24,6 +25,7 @@ class Options:
         roc_plots: bool = True,
         shap_sample_size: int = 100,
     ):
+        self.test_ratio = test_ratio
         self.shap_sample_size = shap_sample_size
         self.roc_plots = roc_plots
         self.shap_plots = shap_plots
