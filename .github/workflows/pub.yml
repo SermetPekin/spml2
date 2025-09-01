@@ -16,8 +16,14 @@ jobs:
           python-version: '3.11'
       - name: Install build tools
         run: pip install build twine
+      - name: Install test dependencies
+        run: |
+          pip install pytest
+          pip install .[test] || pip install .
       - name: Build package
         run: python -m build
+      - name: Run tests
+        run: pytest
       - name: Publish to PyPI
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
