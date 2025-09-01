@@ -9,35 +9,22 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def create_from_template(module_: str = "models_user", current_folder: str = "."):
-    import spml2
-
-    package_dir = Path(spml2.__file__).parent
-    templates_dir = package_dir / "templates"
-    file_path = Path(current_folder) / f"{module_}.py"
-    if not file_path.exists():
-        with (
-            open(templates_dir / f"{module_}.py", "r") as src,
-            open(file_path, "w") as dst,
-        ):
-            dst.write(src.read())
-        return True
-    return False
-
-
 def create_from_content(
-    module_: str = "models_user", content: str = "", current_folder: str = "."
+    module_: str = "models_user",
+    content: str = "",
+    current_folder: str = ".",
+    force: bool = False,
 ):
 
     file_path = Path(current_folder) / f"{module_}.py"
-    if not file_path.exists():
+    if not file_path.exists() or force:
         with open(file_path, "w") as dst:
             dst.write(content)
         return True
     return False
 
 
-def init_user_files(current_folder: str = "."):
+def init_user_files(current_folder: str = ".", force: bool = False):
     from .templates_content.models_ import models_content
     from .templates_content.options_ import options_content
     from .templates_content.main_ import main_content
@@ -49,23 +36,8 @@ def init_user_files(current_folder: str = "."):
         ("options_user", options_content),
         ("spml2_main", main_content),
     ]:
-        if create_from_content(module_, content, current_folder):
+        if create_from_content(module_, content, current_folder, force=force):
             created.append(module_)
-    if created:
-        for file in created:
-            print(f"Created: {file}")
-    else:
-        print("[+] Initial files already exist.")
-
-
-def init_user_filesOld(current_folder: str = "."):
-
-    create_example_files()
-    created = [
-        module_
-        for module_ in ["models_user", "options_user", "spml2_main"]
-        if create_from_template(module_, current_folder)
-    ]
     if created:
         for file in created:
             print(f"Created: {file}")
@@ -81,17 +53,19 @@ def get_package_file_path(filename):
 
 
 def console_main():
-    help_message = """\n\
+    help_message = """\
 SPML2 Command Line Interface
 
 Usage:
   spml2 web         # Launch the web UI
   spml2 init        # Create example user files in the current directory
+  spml2 init -f     # Force overwrite example user files even if they exist
 
 Examples:
   spml2 web
   spml2 web --server.port 8502
   spml2 init
+  spml2 init -f
 """
     if len(sys.argv) < 2:
         print(help_message)
@@ -111,7 +85,8 @@ Examples:
         subprocess.run(["streamlit", "run", web_path, *args])
         sys.exit(0)
     if cmd == "init":
-        init_user_files()
+        force = len(sys.argv) > 2 and sys.argv[2] == "-f"
+        init_user_files(force=force)
         sys.exit(0)
 
     # Unknown command
