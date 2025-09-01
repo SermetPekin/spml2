@@ -1,7 +1,7 @@
 
 [project]
 name = "spml2-mltools"
-version = "1.0.29"
+version = "1.0.30"
 authors = [
     {name = "Sermet Pekin" , email = "Sermet.Pekin@gmail.com"}
 ]
@@ -56,6 +56,7 @@ build-backend = "hatchling.build"
 dev = [
     "black>=25.1.0",
     "flake8>=7.3.0",
+    "pre-commit>=4.3.0",
     "pytest>=8.4.1",
     "ruff>=0.12.11",
 ]

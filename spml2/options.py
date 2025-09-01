@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import time
 from typing import Any
 from typing import TypeAlias
+from spml2.utils_hash import options_hash_from_dict
 
 from imblearn.pipeline import Pipeline as ImbPipeline
 
@@ -37,6 +38,11 @@ class Options:
         # search_kwargs
         search_kwargs: dict | None = None,
     ):
+
+        # given_args = locals()
+        # self.hash_ = options_hash_from_dict(given_args)
+
+        self._given_pipeline: ImbPipeline | None = pipeline
         self.search_type: str = search_type
         self.search_kwargs: dict | None = search_kwargs
         self.pipeline: ImbPipeline | None = pipeline
@@ -76,7 +82,6 @@ class Options:
             self.debug = False
 
     def hash(self):
-        from spml2.utils_hash import options_hash_from_dict
 
         if hasattr(self, "__dict__"):
             options_dict = self.__dict__
