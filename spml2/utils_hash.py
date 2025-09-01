@@ -40,8 +40,12 @@ def options_hash_from_dict(options_dict: dict[str, Any]) -> str:
         "sampling_strategy",
     ]
     for key in keys:
-        opts[key] = options_dict[key]
+        if key in options_dict:
+            opts[key] = options_dict[key]
+        else:
+            import warnings
 
+            warnings.warn(f"Missing key in options_dict: {key}")
     return get_hash_(opts)
 
 

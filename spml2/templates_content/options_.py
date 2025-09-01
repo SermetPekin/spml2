@@ -1,5 +1,5 @@
 options_content = """\n
---- User-editable configuration ---
+# --- User-editable configuration ---
 
 # DATA SETTINGS
 from pathlib import Path
