@@ -179,7 +179,12 @@ def prepare_data(
     X = df.drop(options.target_name, axis=1)
     y = df[options.target_name]
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, train_size=options.train_size, random_state=42, stratify=y
+        X,
+        y,
+        test_size=options.test_ratio,
+        train_size=options.train_size,
+        random_state=42,
+        stratify=y,
     )
     return X_train, X_test, y_train, y_test, categorical_cols, df
 
@@ -220,7 +225,7 @@ class ActionAbstract:
             result_name = f"repeated_{result_name}"
         return result_name
 
-    def shap_plots(self, model: Any, X: pd.DataFrame):
+    def shap_plots(self, model: Any, X: pd.DataFrame, result_name: str):
         if not self.options.shap_plots:
             return
         from .shap_local import ShapTree, ShapLinear, ShapAuto
@@ -229,12 +234,22 @@ class ActionAbstract:
         folder.mkdir(parents=True, exist_ok=True)
         rows = self.options.shap_sample_size
         explainer = ShapAuto(model, X.head(rows))
-        explainer.summary_plot(
-            save_path=folder / f"shap_summary_{model.__class__.__name__}.png"
-        )
-        explainer.force_plot(
-            save_path=folder / f"shap_force_{model.__class__.__name__}.png"
-        )
+        explainer.summary_plot(save_path=folder / f"shap_summary_{result_name}.png")
+
+    def should_I_pass(self, model_name: str) -> bool:
+        if str(model_name).strip().startswith("#") or "cancelled" in model_name.lower():
+            local_print(
+                f"\n{'='*50}\n Passing {model_name}  \n{'='*50}",
+                output_area=self.output_area,
+            )
+            return True
+        return False
+
+    def test_name_when_debug(self, models: dict) -> str:
+        if "XGBoost" in models:
+            return "XGBoost"
+
+        return list(models.keys())[0]
 
     def execute(self) -> "ActionAbstract":
 
@@ -249,17 +264,10 @@ class ActionAbstract:
         features = X_train.columns.tolist()
         results = []
         for model_name, config in models.items():
-            if (
-                str(model_name).strip().startswith("#")
-                or "cancelled" in model_name.lower()
-            ):
-                local_print(
-                    f"\n{'='*50}\n Passing {model_name}  \n{'='*50}",
-                    output_area=self.output_area,
-                )
+            if self.should_I_pass(model_name):
                 continue
             if self.options.debug:
-                if model_name != "KNN":
+                if model_name != self.test_name_when_debug(models):
                     local_print(
                         f"Debug mode is open passing this {model_name}",
                         output_area=self.output_area,
@@ -269,6 +277,8 @@ class ActionAbstract:
                 f"\n Next Model : {model_name} \n",
                 output_area=self.output_area,
             )
+            # best_model.named_steps["model"]
+
             best_model, duration, best_params = self.get_best_model(
                 config, preprocessor, X_train, y_train, self.options, model_name
             )
@@ -277,7 +287,19 @@ class ActionAbstract:
 
             save_model(best_model, result_name, self.options)
             save_metrics(metrics, result_name, self.options)
-            self.shap_plots(best_model.named_steps["model"], X_test)
+
+            # Shap Summary plot
+            if self.options.shap_plots:
+                X_test_processed = pd.DataFrame(
+                    best_model.named_steps["preprocessor"].transform(X_test),
+                    columns=features,
+                )
+                # X_test_processed = pd.DataFrame(best_model.named_steps["preprocessor"].transform(X_test) , columns=features)
+                self.shap_plots(
+                    best_model.named_steps["model"], X_test_processed, result_name
+                )
+
+            # ROC AUC plot
             if self.options.roc_plots:
                 plot_roc_curve(
                     model_name,
