@@ -37,7 +37,7 @@ def test_process_with_custom_pipeline_and_search_type():
         roc_plots=False,
         shap_sample_size=10,
         pipeline=make_test_pipeline(),  # Pass custom pipeline
-        search_type="grid",  # Test grid search
+        search_type="random",  # Test grid search
         search_kwargs={"verbose": 0},  # Custom search kwargs
     )
     models = {

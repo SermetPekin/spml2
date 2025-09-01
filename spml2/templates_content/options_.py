@@ -16,11 +16,13 @@ from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
-user_pipeline = ImbPipeline([
-    ("preprocessor", StandardScaler()),
-    ("smote", SMOTE(random_state=42)),
-    # Add more steps as needed
-])
+
+# You may define a custom pipeline here and use it in the options
+# user_pipeline = ImbPipeline([
+#     ("preprocessor", StandardScaler()),
+#     ("smote", SMOTE(random_state=42)),
+#     # Add more steps as needed
+# ])
 
 # MODEL/SEARCH SETTINGS
 N_SPLITS = 5  # Cross-validation splits
@@ -55,7 +57,7 @@ options = Options(
     shap_plots=SHAP_PLOTS,
     roc_plots=ROC_PLOTS,
     shap_sample_size=SHAP_SAMPLE_SIZE,
-    pipeline=user_pipeline,
+    pipeline=None,  # user_pipeline
     search_type=SEARCH_TYPE,
     search_kwargs=SEARCH_KWARGS,
 )
