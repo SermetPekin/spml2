@@ -1,14 +1,10 @@
 models_content = """\n
-
-
 # This file should contain user-specific models.
 # This file will be imported in the main file while running
 # either with WEB UI or CLI and should not run any long process
 # by itself.
 # -> # before model name means this model will be excluded from the pipeline
 # example #LogisticRegression-L2 below will be excluded from the pipeline
-
-
 import numpy as np
 from sklearn.model_selection import (
     train_test_split,
@@ -23,7 +19,6 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
-
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
@@ -32,9 +27,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 import warnings
-
 warnings.filterwarnings("ignore")
-
 models = {
     "XGBoost": {
         "model": XGBClassifier(random_state=42, n_jobs=-1, eval_metric="auc"),
@@ -122,5 +115,4 @@ models = {
         },
     },
 }
-
 """

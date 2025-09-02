@@ -31,7 +31,6 @@ class ShapAbstract(ABC):
     def shap_values(self) -> Any:
         if self.shap_vals is None:
             self.shap_vals = self.shap_values_helper()
-
         return self.shap_vals
 
     def summary_plot(
@@ -41,7 +40,6 @@ class ShapAbstract(ABC):
         plot_type: str = "layered_violin",
         **kwargs,
     ):
-
         shap_values = self.shap_values()
         shap.summary_plot(
             shap_values,

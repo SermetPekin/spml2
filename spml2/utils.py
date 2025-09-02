@@ -7,12 +7,10 @@ import random
 import string
 import joblib
 from typing import Any
-
 from .options import Options
 
 
 def local_print(*args, **kwargs):
-
     if "output_area" in kwargs:
         output_area = kwargs["output_area"]
     else:
@@ -34,7 +32,6 @@ def local_print_df(*args, **kwargs):
     try:
         for arg in args:
             if output_area is not None and isinstance(arg, pd.DataFrame):
-
                 output_area.dataframe(arg)
                 shown = True
             elif output_area is not None and isinstance(arg, pd.Series):
@@ -85,7 +82,6 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
     report = pd.DataFrame(best_model_result["Classification Report"])
     print(results_df)
     print(report)
-
     if save:
         save_results(
             df, "Together", results_df, best_model_result, report, options=options
@@ -94,6 +90,11 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
 
 def check_cols(_df, options):
     cols = _df.columns
+    if isinstance(options.data, pd.DataFrame):
+        cols = _df.columns
+        _df = options.data
+        return
+        # raise ValueError("options.data should be None when calling this function")
 
     def check(x: str):
         return x in cols

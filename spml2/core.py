@@ -10,6 +10,7 @@ from typing import Any, Tuple, Dict
 import numpy as np
 import pandas as pd
 from rich import print
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import (
     train_test_split,
     StratifiedKFold,
@@ -27,11 +28,10 @@ from sklearn.compose import ColumnTransformer
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.model_selection import GridSearchCV
-
 from typing import Literal
 
-
 # Local
+from .data_ import assert_columns_exist, assert_numerical_cols
 from .models import models
 from .options import Options
 from .utils import (
@@ -66,15 +66,14 @@ from .feature_importances import (
 # / Local imports =============================================================
 # ================Warnings=====================================================
 warnings.filterwarnings("ignore")
+
+
 # =================================Core Process================================
-
-
 def get_search_type(
     options: Options, param_grid: dict
 ) -> RandomizedSearchCV | GridSearchCV:
     search_type = getattr(options, "search_type", "random")
     search_kwargs = (getattr(options, "search_kwargs", None) or {}).copy()
-
     default_kwargs = {
         "cv": StratifiedKFold(n_splits=options.n_splits, shuffle=True, random_state=42),
         "scoring": "roc_auc",
@@ -83,7 +82,6 @@ def get_search_type(
         "error_score": "raise",
     }
     search_kwargs.update(default_kwargs)
-
     if search_type == "random":
         search = RandomizedSearchCV(options.pipeline, param_grid, **search_kwargs)
     elif search_type == "grid":
@@ -102,6 +100,7 @@ def train_and_search(
     options: Options,
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
+
     if isinstance(options.pipeline, ImbPipeline):
         options._given_pipeline = copy.deepcopy(options.pipeline)
     else:
@@ -125,13 +124,22 @@ def train_and_search(
         else:
             steps.append(("model", model))
         options.pipeline = ImbPipeline(steps)
-
     if not isinstance(options.pipeline, ImbPipeline):
         raise ValueError(
             f"Pipeline is not an instance of ImbPipeline. Got {type(options.pipeline)}"
         )
-
     search = get_search_type(options, param_grid)
+
+    # print(preprocessor)
+    # print("Numerical columns:", options.numerical_cols)
+    # print("Categorical columns:", options.categorical_cols)
+    # assert_numerical_cols(X_train, options)
+
+    print("Pipeline steps:", options.pipeline.steps)
+    print("X_train dtypes:\n", X_train.dtypes)
+    print("First few rows of X_train:\n", X_train.head())
+    # exit()
+
     start = datetime.now()
     search.fit(X_train, y_train)
     end = datetime.now()
@@ -152,7 +160,6 @@ def evaluate_model(
             y_proba = model.decision_function(X_test)
         except AttributeError:
             y_proba = None
-
     metrics = {
         "F1 Score": f1_score(
             y_test, y_pred, average="binary" if len(np.unique(y_test)) == 2 else "macro"
@@ -167,71 +174,14 @@ def evaluate_model(
             metrics["ROC AUC"] = roc_auc_score(y_test, y_proba)
         except Exception:
             metrics["ROC AUC"] = None
-
     return y_pred, y_proba, metrics
 
 
-class TargetColumnNameNotFound(Exception):
-    pass
-
-
-class TargetColumnNotBinary(Exception):
-    pass
-
-
-def prepare_data(
-    df: pd.DataFrame, options: Options, output_area: Any = None
-) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
-
-    print_report_initial(df, options, output_area=output_area)
-    target_name_was = options.target_name
-    # If target_name is None, use the first column
-    if options.target_name is None:
-        options.target_name = df.columns[0]
-        msg = f"No target column specified. Using the first column: '{options.target_name}' as target."
-        warnings.warn(msg)
-        print(msg)
-        time.sleep(2)
-
-    if options.target_name not in df.columns:
-        msg = f"Target name '{options.target_name}' not found in DataFrame columns."
-        raise TargetColumnNameNotFound(msg)
-
-    # Check if the target column is suitable for binary classification
-    target_values = df[options.target_name].dropna().unique()
-    if len(target_values) != 2:
-        if target_name_was is None:
-            msg = f"Target name was not specified. Using the first column: '{options.target_name}' as target."
-        target_values_str = ", ".join(map(str, (list(target_values[0:3]) + ["..."])))
-        msg += f"\nTarget column '{options.target_name}' is not binary (unique values: {target_values_str}). Please provide a binary target column."
-        raise TargetColumnNotBinary(msg)
-
-    df[options.target_name] = pd.to_numeric(df[options.target_name], downcast="integer")
-    local_print_df(df.head(), output_area=output_area)
-    if options.numerical_cols is None:
-        options.numerical_cols = df.select_dtypes(
-            include=["int64", "float64"]
-        ).columns.tolist()
-    categorical_cols = [col for col in df.columns if col not in options.numerical_cols]
-    categorical_cols = [col for col in categorical_cols if col != options.target_name]
-    X = df.drop(options.target_name, axis=1)
-    y = df[options.target_name]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=options.test_ratio,
-        random_state=42,
-        stratify=y,
-    )
-    return X_train, X_test, y_train, y_test, categorical_cols, df
-
-
 def build_preprocessor(options: Options, categorical_cols: list) -> ColumnTransformer:
-
     return ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), options.numerical_cols),
-            ("cat", "passthrough", categorical_cols),
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
         ]
     )
 
@@ -243,7 +193,6 @@ class ActionAbstract:
     def __init__(
         self, options: Options, models: dict, output_area=None, plot_area=None
     ):
-
         self.options = options
         self.models = models
         self.output_area = output_area
@@ -275,67 +224,77 @@ class ActionAbstract:
 
     def should_I_pass(self, model_name: str) -> bool:
         if str(model_name).strip().startswith("#") or "cancelled" in model_name.lower():
-            local_print(
-                f"\n{'='*50}\n Passing {model_name}  \n{'='*50}",
-                output_area=self.output_area,
-            )
+            self.print(f"\nPassing {model_name}\n")
             return True
         return False
 
     def test_name_when_debug(self, models: dict) -> str:
         if "XGBoost" in models:
             return "XGBoost"
-
         return list(models.keys())[0]
 
-    def execute(self) -> "ActionAbstract":
+    def print(self, msg: str):
+        local_print(msg, output_area=self.output_area)
 
-        df = self.get_df()
+    def execute(self) -> "ActionAbstract":
+        from .data_abstract import get_data_abstract_with_options, DataAbstract
+
         if self.name == "Fresh":
             save_pip_freeze(self.options)
-        X_train, X_test, y_train, y_test, categorical_cols, df = prepare_data(
+
+        df = self.get_df()
+
+        self.data_abstract: DataAbstract = get_data_abstract_with_options(
+            self.options, df, self.output_area
+        )
+
+        X_train, X_test, y_train, y_test = self.data_abstract.get_X_y(
             df, self.options, output_area=self.output_area
         )
+
         self.df_final = df
-        preprocessor = build_preprocessor(self.options, categorical_cols)
+        preprocessor = build_preprocessor(
+            self.options, self.data_abstract.categorical_cols
+        )
         features = X_train.columns.tolist()
+
         results = []
         for model_name, config in models.items():
             if self.should_I_pass(model_name):
                 continue
             if self.options.debug:
                 if model_name != self.test_name_when_debug(models):
-                    local_print(
-                        f"Debug mode is open passing this {model_name}",
-                        output_area=self.output_area,
-                    )
+                    self.print(f"Debug mode is open passing this {model_name}")
                     continue
-            local_print(
-                f"\n Next Model : {model_name} \n",
-                output_area=self.output_area,
-            )
-            # best_model.named_steps["model"]
-
+            self.print(f"\n Next Model : {model_name} \n")
             best_model, duration, best_params = self.get_best_model(
                 config, preprocessor, X_train, y_train, self.options, model_name
             )
             metrics = self.get_metrics(best_model, X_test, y_test)
             result_name = self.get_result_name(model_name)
-
             save_model(best_model, result_name, self.options)
             save_metrics(metrics, result_name, self.options)
-
             # Shap Summary plot
             if self.options.shap_plots:
-                X_test_processed = pd.DataFrame(
-                    best_model.named_steps["preprocessor"].transform(X_test),
-                    columns=features,
-                )
-                # X_test_processed = pd.DataFrame(best_model.named_steps["preprocessor"].transform(X_test) , columns=features)
+                arr = best_model.named_steps["preprocessor"].transform(X_test)
+                # Dynamically get feature names from the preprocessor
+                feature_names = []
+                for name, transformer, cols in best_model.named_steps[
+                    "preprocessor"
+                ].transformers_:
+                    if name == "num":
+                        feature_names += cols
+                    elif name == "cat":
+                        if hasattr(transformer, "get_feature_names_out"):
+                            feature_names += list(
+                                transformer.get_feature_names_out(cols)
+                            )
+                        else:
+                            feature_names += cols
+                X_test_processed = pd.DataFrame(arr, columns=feature_names)
                 self.shap_plots(
                     best_model.named_steps["model"], X_test_processed, result_name
                 )
-
             # ROC AUC plot
             if self.options.roc_plots:
                 plot_roc_curve(
@@ -351,15 +310,11 @@ class ActionAbstract:
             if duration is None:
                 duration = " "
             else:
-                import datetime as dt
 
                 rounded_seconds = round(duration.total_seconds())
                 duration = f" : {rounded_seconds:.2f} seconds"
+            self.print(f"\n{model_name}{duration} \n ")
 
-            local_print(
-                f"\n{model_name}{duration} \n ",
-                output_area=self.output_area,
-            )
             model_results_dict = {
                 "Model": model_name,
                 "Best Params": str(best_params),
@@ -430,10 +385,7 @@ class ActionCache(ActionAbstract):
     def get_best_model(
         self, config, preprocessor, X_train, y_train, options, model_name
     ):
-        local_print(
-            f"\n[Checking cache] Next model : { model_name} \n",
-            output_area=self.output_area,
-        )
+        self.print(f"\n[Checking cache] Next model : { model_name} \n")
         bucket_name = name_format_estimator(model_name, self.df_final, options)
         best_model = load_model_cache(bucket_name, options)
         self.metrics = load_metrics_cache(bucket_name, options)

@@ -15,7 +15,6 @@ from sklearn.metrics import (
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
 import warnings
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -23,7 +22,6 @@ from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 
 warnings.filterwarnings("ignore")
-
 models = {
     "XGBoost": {
         "model": XGBClassifier(random_state=42, n_jobs=-1, eval_metric="auc"),

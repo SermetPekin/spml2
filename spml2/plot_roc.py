@@ -36,7 +36,6 @@ def plot_roc_curve(
             except Exception as e:
                 print(f"Error during prediction: {e}")
                 return
-
         fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
         auc = roc_auc_score(y_test, y_pred_proba)
         plt.figure(figsize=(8, 6))

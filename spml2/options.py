@@ -1,3 +1,4 @@
+import pandas as pd
 from pathlib import Path
 import os
 from dataclasses import dataclass
@@ -5,7 +6,6 @@ import time
 from typing import Any
 from typing import TypeAlias
 from spml2.utils_hash import options_hash_from_dict
-
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 PathStr: TypeAlias = str | Path
@@ -24,8 +24,9 @@ class Options:
         test_ratio: float = 0.20,
         root: PathStr = Path("./input"),
         real_df_filename="example.dta",
-        output_folder: PathStr = None,
-        numerical_cols=None,
+        output_folder: PathStr | None = None,
+        numerical_cols: PathStr | None = None,
+        categorical_cols: PathStr | None = None,
         sampling_strategy: FloatStr = "auto",
         n_splits: int = 5,
         cache: bool = True,
@@ -37,11 +38,12 @@ class Options:
         search_type: str = "random",
         # search_kwargs
         search_kwargs: dict | None = None,
+        data: pd.DataFrame | None = None,
     ):
-
+        self.data: pd.DataFrame | None = data
         # given_args = locals()
         # self.hash_ = options_hash_from_dict(given_args)
-
+        self.categorical_cols: PathStr | None = categorical_cols
         self._given_pipeline: ImbPipeline | None = pipeline
         self.search_type: str = search_type
         self.search_kwargs: dict | None = search_kwargs
@@ -64,25 +66,20 @@ class Options:
         )
         self.output_folder: Path = Path(self.output_folder)
         self.numerical_cols: SequenceStr | None = numerical_cols
-
         self.test_file_name: Path = self.real_df_path.with_stem(
             f"small_df_{self.test_df_size}" + self.real_df_path.stem
         ).with_suffix(".parquet")
-
         if not self.output_folder.exists():
             os.makedirs(self.output_folder)
         self.real_df_path = Path(self.real_df_path)
-
         if not self.real_df_path.exists():
             print(f"Warning: Data file does not exist: {self.real_df_path}")
-
         if not self.test_mode and self.debug:
             time.sleep(2)
             print("Ignoring debug mode when test mode is False")
             self.debug = False
 
     def hash(self):
-
         if hasattr(self, "__dict__"):
             options_dict = self.__dict__
         else:
@@ -109,7 +106,6 @@ class Options:
         {self.hash()}
         Data / Process options
         ________________________
-
         test_mode :  {self.test_mode}
         debug :  {self.debug}
         target_name :  {self.target_name}
@@ -121,7 +117,6 @@ class Options:
         test_file_name : {self.test_file_name}
         shap_plots : {self.shap_plots}
         roc_plots : {self.roc_plots}
-
         Model options (common for all models)
         ________________________
         n_splits : {self.n_splits}
