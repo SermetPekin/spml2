@@ -152,7 +152,7 @@ def save_df_to_parquet(df, filepath, compression="snappy"):
 
 
 def get_original_data(options: Options) -> pd.DataFrame:
-    if not isinstance(options.data, type(pd.DataFrame)):
+    if not isinstance(options.data, type(None)):
         return options.data
     real_df_path = options.real_df_path
     suffix = real_df_path.suffix.lower()
