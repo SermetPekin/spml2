@@ -15,6 +15,12 @@ from spml2.utils import get_data
 warnings.filterwarnings("ignore", module="pyarrow")
 
 
+st.set_page_config(
+    page_title="SPML2 User Interface",   
+    page_icon="🧠",                     
+    layout="wide"
+)
+
 def import_user_module(module_name, file_name):
     user_path = Path.cwd() / file_name
     spec = importlib.util.spec_from_file_location(module_name, user_path)
