@@ -1,4 +1,4 @@
-# SPML2-mltools
+# spml2-mltools
 
 [![Python package](https://github.com/SermetPekin/spml2/actions/workflows/package.yml/badge.svg)](https://github.com/SermetPekin/spml2/actions/workflows/package.yml)
 [![PyPI - Full Versions](https://github.com/SermetPekin/spml2/actions/workflows/pypi-full.yml/badge.svg)](https://github.com/SermetPekin/spml2/actions/workflows/pypi-full.yml)
@@ -8,7 +8,7 @@
 
 ## Overview
 
-**SPML2-mltools** is a convenient package for applying machine learning workflows with a Streamlit app, generating Excel outputs, and visualizations.
+**spml2-mltools** is a convenient package for applying machine learning workflows with a Streamlit app, generating Excel outputs, and visualizations.
 
 ---
 
@@ -32,6 +32,11 @@ spml2 init
 # - models_user.py
 ```
 
+You can also use:
+
+```bash
+spml init
+```
 ### 2. Run Classification
 
 ```bash
@@ -42,13 +47,14 @@ python spml2_main.py
 
 ```bash
 spml2 web
+
 ```
 
 You can also use:
 ```bash
 spml web
+
 ```
-if installed with the alternate entry point.
 
 ---
 

@@ -1,4 +1,14 @@
 models_content = """\n
+
+
+# This file should contain user-specific models.
+# This file will be imported in the main file while running
+# either with WEB UI or CLI and should not run any long process
+# by itself.
+# -> # before model name means this model will be excluded from the pipeline
+# example #LogisticRegression-L2 below will be excluded from the pipeline
+
+
 import numpy as np
 from sklearn.model_selection import (
     train_test_split,
@@ -51,7 +61,7 @@ models = {
             "model__max_features": ["sqrt", "log2", None],
         },
     },
-    "Cancelled-LogisticRegression-L2": {  # L2
+    "#LogisticRegression-L2": {  # L2
         "model": LogisticRegression(random_state=42, n_jobs=-1, max_iter=1000),
         "params": {
             "model__C": [0.001, 0.01, 0.1, 1, 10],

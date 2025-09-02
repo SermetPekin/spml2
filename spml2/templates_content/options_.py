@@ -1,6 +1,14 @@
 options_content = """\n
 # --- User-editable configuration ---
 
+
+# This file should contain user-specific configurations.
+# This file will be imported in the main file while running
+# either with WEB UI or CLI and should not run any long process
+# by itself.
+
+
+
 # DATA SETTINGS
 from pathlib import Path
 ROOT = Path("./input")  # Root directory for data
