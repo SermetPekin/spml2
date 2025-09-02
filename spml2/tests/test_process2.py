@@ -11,7 +11,8 @@ from spml2.parque_utils import df_to_stata
 from spml2.utils_init import get_example_data2
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
-from spml2.core import assert_numerical_cols, check_data_with_options
+
+from spml2.data_abstract import DataAbstract
 
 
 def get_preprocessor(options: Options) -> ColumnTransformer:
@@ -54,7 +55,8 @@ options = Options(
     search_kwargs={"verbose": 0},  # Custom search kwargs
     data=get_example_data2(),
 )
-options.pipeline = make_test_pipeline(options)
+
+
 models = {
     "XGBoost": {
         "model": XGBClassifier(random_state=42, n_jobs=1, eval_metric="auc"),
@@ -65,10 +67,10 @@ models = {
     },
 }
 
-data, options = check_data_with_options(options.data, options)
-options.data = data
-data
-print(options.data)
-# Run both fresh and cache processes
-Process(options, models)
-# Process_cache(options, models)
+
+def test_process2():
+    global options
+    df = get_example_data2()
+    df, options = DataAbstract.check_data2(df, options)
+    options.pipeline = make_test_pipeline(options)
+    Process(options, models)

@@ -132,6 +132,14 @@ def train_and_search(
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
 
+    # assert isinstance(options.pipeline, ImbPipeline), "Pipeline is not an instance of ImbPipeline"
+    # assert options.categorical_cols
+    # assert options.numerical_cols
+    # print(options.categorical_cols , options.numerical_cols)
+
+    # assert options.categorical_cols
+    # assert options.numerical_cols
+
     # options.pipeline will be updated below
     get_pipeline(options, preprocessor, model)
     search = get_search_type(options, param_grid)
@@ -190,8 +198,10 @@ class ActionAbstract:
         df = get_data(self.options)
         return df
 
-    @staticmethod
-    def get_preprocessor(options: Options, categorical_cols: list) -> ColumnTransformer:
+    def get_preprocessor(
+        self, options: Options, categorical_cols: list
+    ) -> ColumnTransformer:
+
         return ColumnTransformer(
             transformers=[
                 ("num", StandardScaler(), options.numerical_cols),
@@ -364,6 +374,7 @@ class ActionFresh(ActionAbstract):
     def get_best_model(
         self, config, preprocessor, X_train, y_train, options, model_name
     ):
+
         best_model, duration, best_params = train_and_search(
             config["model"], preprocessor, X_train, y_train, options, config["params"]
         )

@@ -136,6 +136,7 @@ def create_parque_files_for_folder(folder):
 
 
 def initial_data_check(options: Options):
+
     print(
         "initial check for data formats. This will create Parquet file for stata files"
     )
@@ -150,14 +151,24 @@ def save_df_to_parquet(df, filepath, compression="snappy"):
         print(f"Error saving DataFrame to Parquet: {e}")
 
 
-def get_original_data(options: Options):
+def get_original_data(options: Options) -> pd.DataFrame:
+    if not isinstance(options.data, type(pd.DataFrame)):
+        return options.data
     real_df_path = options.real_df_path
-    if real_df_path.suffix == ".dta":
+    suffix = real_df_path.suffix.lower()
+    if suffix == ".dta":
         df = pd.read_stata(real_df_path)
-    elif real_df_path.suffix == ".parquet":
+    elif suffix == ".parquet":
         df = pd.read_parquet(real_df_path, engine="pyarrow")
+    elif suffix in [".xlsx", ".xls"]:
+        df = pd.read_excel(real_df_path)
+    elif suffix == ".csv":
+        df = pd.read_csv(real_df_path)
     else:
-        raise ValueError("Original file format not expected")
+        raise ValueError(
+            "Only accepts Stata (.dta), Parquet (.parquet), Excel (.xlsx, .xls), or CSV (.csv) file formats!",
+            real_df_path,
+        )
     return df
 
 

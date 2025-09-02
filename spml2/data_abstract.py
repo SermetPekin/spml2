@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
+from time import time
 import pandas as pd
 
-from spml2.data_ import prepare_data, check_data_with_options
-
+from .data_ import prepare_data, check_data_with_options
 from .options import Options
 
 
@@ -50,6 +50,13 @@ class DataAbstract(ABC):
                 if col not in self.categorical_cols and col != self.target_name
             ]
 
+    def sleep(self, duration: float = 2.0):
+        time.sleep(duration)
+
+    def warn(self, msg: str):
+        print(f"[DataAbstract] Warning: {msg}")
+        self.sleep(3)
+
     def validate(self):
         # Check for missing columns and correct dtypes
         missing_num = [col for col in self.numerical_cols if col not in self.df.columns]
@@ -57,21 +64,22 @@ class DataAbstract(ABC):
             col for col in self.categorical_cols if col not in self.df.columns
         ]
         if missing_num:
-            print(f"[DataAbstract] Missing numerical columns: {missing_num}")
+            self.warn(f"Missing numerical columns: {missing_num}")
+
         if missing_cat:
-            print(f"[DataAbstract] Missing categorical columns: {missing_cat}")
+            self.warn(f"Missing categorical columns: {missing_cat}")
         for col in self.numerical_cols:
             if not pd.api.types.is_numeric_dtype(self.df[col]):
-                print(
-                    f"[DataAbstract] Warning: Numerical column '{col}' is not numeric (dtype: {self.df[col].dtype})"
+                self.warn(
+                    f"Numerical column '{col}' is not numeric (dtype: {self.df[col].dtype})"
                 )
         for col in self.categorical_cols:
             if not (
                 pd.api.types.is_object_dtype(self.df[col])
                 or pd.api.types.is_string_dtype(self.df[col])
             ):
-                print(
-                    f"[DataAbstract] Warning: Categorical column '{col}' is not string/object (dtype: {self.df[col].dtype})"
+                self.warn(
+                    f"Categorical column '{col}' is not string/object (dtype: {self.df[col].dtype})"
                 )
 
     def check_data(self):
@@ -79,6 +87,12 @@ class DataAbstract(ABC):
         df, options = check_data_with_options(
             self.df, self.options, output_area=self.output_area
         )
+        return df, options
+
+    @staticmethod
+    def check_data2(df: pd.DataFrame, options: Options, output_area=None):
+
+        df, options = check_data_with_options(df, options, output_area=output_area)
         return df, options
 
     def get_X_y(self, df, options, output_area=None):
