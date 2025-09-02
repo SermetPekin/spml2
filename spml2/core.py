@@ -92,15 +92,7 @@ def get_search_type(
     return search
 
 
-def train_and_search(
-    model: Any,
-    preprocessor: Any,
-    X_train: pd.DataFrame,
-    y_train: pd.Series,
-    options: Options,
-    param_grid: dict,
-) -> tuple[Any, Any, dict]:
-
+def get_pipeline(options: Options, preprocessor: Any, model: Any) -> ImbPipeline:
     if isinstance(options.pipeline, ImbPipeline):
         options._given_pipeline = copy.deepcopy(options.pipeline)
     else:
@@ -128,17 +120,21 @@ def train_and_search(
         raise ValueError(
             f"Pipeline is not an instance of ImbPipeline. Got {type(options.pipeline)}"
         )
+    return options
+
+
+def train_and_search(
+    model: Any,
+    preprocessor: Any,
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    options: Options,
+    param_grid: dict,
+) -> tuple[Any, Any, dict]:
+
+    # options.pipeline will be updated below
+    get_pipeline(options, preprocessor, model)
     search = get_search_type(options, param_grid)
-
-    # print(preprocessor)
-    # print("Numerical columns:", options.numerical_cols)
-    # print("Categorical columns:", options.categorical_cols)
-    # assert_numerical_cols(X_train, options)
-
-    print("Pipeline steps:", options.pipeline.steps)
-    print("X_train dtypes:\n", X_train.dtypes)
-    print("First few rows of X_train:\n", X_train.head())
-    # exit()
 
     start = datetime.now()
     search.fit(X_train, y_train)
@@ -177,15 +173,6 @@ def evaluate_model(
     return y_pred, y_proba, metrics
 
 
-def build_preprocessor(options: Options, categorical_cols: list) -> ColumnTransformer:
-    return ColumnTransformer(
-        transformers=[
-            ("num", StandardScaler(), options.numerical_cols),
-            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
-        ]
-    )
-
-
 class ActionAbstract:
     name: str = "ActionAbstract"
     description: str = "Abstract action"
@@ -202,6 +189,15 @@ class ActionAbstract:
         initial_data_check(self.options)
         df = get_data(self.options)
         return df
+
+    @staticmethod
+    def get_preprocessor(options: Options, categorical_cols: list) -> ColumnTransformer:
+        return ColumnTransformer(
+            transformers=[
+                ("num", StandardScaler(), options.numerical_cols),
+                ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
+            ]
+        )
 
     @abstractmethod
     def get_metrics(self, model, X_test, y_test): ...
@@ -253,7 +249,7 @@ class ActionAbstract:
         )
 
         self.df_final = df
-        preprocessor = build_preprocessor(
+        preprocessor = self.get_preprocessor(
             self.options, self.data_abstract.categorical_cols
         )
         features = X_train.columns.tolist()
