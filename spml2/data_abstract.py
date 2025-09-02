@@ -134,11 +134,11 @@ def get_data_abstract_with_options(options, df, output_area=None) -> DataAbstrac
     if not isinstance(options.data, type(None)):
         df = options.data
 
-        return DataAbstract(
-            options=options,
-            df=df,
-            target_name=options.target_name,
-            numerical_cols=options.numerical_cols,
-            categorical_cols=options.categorical_cols,
-            output_area=output_area,
-        )
+    return DataAbstract(
+        options=options,
+        df=df,
+        target_name=options.target_name,
+        numerical_cols=options.numerical_cols,
+        categorical_cols=options.categorical_cols,
+        output_area=output_area,
+    )
