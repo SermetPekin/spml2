@@ -26,6 +26,15 @@ class DataAbstract(ABC):
         self._infer_column_types()
         self.validate()
 
+        self.check_data()
+
+    def check_data(self) -> None:
+
+        self.df, self.options = check_data_with_options(
+            self.df, self.options, output_area=self.output_area
+        )
+        # return self.df, self.options
+
     def _infer_column_types(self):
         # Infer numerical/categorical columns if not provided
         if self.numerical_cols is None and self.categorical_cols is None:
@@ -55,7 +64,6 @@ class DataAbstract(ABC):
 
     def warn(self, msg: str):
         print(f"[DataAbstract] Warning: {msg}")
-        self.sleep(3)
 
     def validate(self):
         # Check for missing columns and correct dtypes
@@ -82,25 +90,18 @@ class DataAbstract(ABC):
                     f"Categorical column '{col}' is not string/object (dtype: {self.df[col].dtype})"
                 )
 
-    def check_data(self):
-
-        df, options = check_data_with_options(
-            self.df, self.options, output_area=self.output_area
-        )
-        return df, options
-
     @staticmethod
     def check_data2(df: pd.DataFrame, options: Options, output_area=None):
 
         df, options = check_data_with_options(df, options, output_area=output_area)
         return df, options
 
-    def get_X_y(self, df, options, output_area=None):
+    def get_X_y(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
 
-        self.df, self.options = self.check_data()
+        # self.df, self.options = self.check_data2(self.df, self.options, output_area=output_area)
 
         X_train, X_test, y_train, y_test = prepare_data(
-            self.df, self.options, output_area=output_area
+            self.df, self.options, output_area=self.output_area
         )
         return X_train, X_test, y_train, y_test
 

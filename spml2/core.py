@@ -254,11 +254,9 @@ class ActionAbstract:
             self.options, df, self.output_area
         )
 
-        X_train, X_test, y_train, y_test = self.data_abstract.get_X_y(
-            df, self.options, output_area=self.output_area
-        )
+        X_train, X_test, y_train, y_test = self.data_abstract.get_X_y()
+        self.df_final = self.data_abstract.df
 
-        self.df_final = df
         preprocessor = self.get_preprocessor(
             self.options, self.data_abstract.categorical_cols
         )
