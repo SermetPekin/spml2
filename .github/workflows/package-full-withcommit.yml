@@ -2,7 +2,7 @@ name: Full Python CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main" , 'dev' ]
 
 jobs:
   build:
