@@ -29,6 +29,7 @@ def get_example_data2():
     df = data.frame
     np.random.seed(42)
     df["random_cat"] = np.random.choice(["A", "B", "C"], size=len(df))
-    print(df[["random_cat"]].head())
-    # df["mean radius"] = df["mean radius"].astype(str)
+    df["random_cat2"] = np.random.choice([1, 2, 3], size=len(df))
+    print(df[["random_cat", "random_cat2"]].head())
+
     return df
