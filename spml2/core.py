@@ -30,7 +30,7 @@ from sklearn.model_selection import GridSearchCV
 from typing import Literal
 # 
 from .data_ import assert_columns_exist, assert_numerical_cols
-from .models import models
+from .models import models as DEFAULT_MODELS
 from .options import Options
 from .utils import (
     print_report_initial,
@@ -272,11 +272,12 @@ class ActionAbstract:
         features = X_train.columns.tolist()
 
         results = []
-        for model_name, config in models.items():
+        for model_name, config in self.models.items():
+
             if self.should_I_pass(model_name):
                 continue
             if self.options.debug:
-                if model_name != self.test_name_when_debug(models):
+                if model_name != self.test_name_when_debug(self.models):
                     self.print(f"Debug mode is open passing this {model_name}")
                     continue
             self.print(f"\n Next Model : {model_name} \n")
