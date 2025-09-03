@@ -40,8 +40,10 @@ class Options:
         search_kwargs: dict | None = None,
         data: pd.DataFrame | None = None,
         stratify: bool = True,
-        random_state: int = 42 
+        random_state: int = 42,
+        raise_error: bool = True 
     ):
+        self.raise_error = raise_error
         self.random_state = random_state
         self.stratify = stratify
         self.data: pd.DataFrame | None = data
