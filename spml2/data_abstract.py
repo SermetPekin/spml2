@@ -96,7 +96,10 @@ class DataAbstract(ABC):
 
     @staticmethod
     def check_data2(df: pd.DataFrame, options: Options, output_area=None):
-
+        if not options.data is None : 
+            df = options.data
+            warnings.warn("Using DataFrame provided in options.data")
+            time.sleep(2)
         df, options = set_numerical_categ_cols(df, options, output_area=output_area)
         return df, options
 
