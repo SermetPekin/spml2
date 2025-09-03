@@ -1,23 +1,22 @@
-
 from spml2 import Options
 import subprocess
-import sys 
-import os 
+import sys
+import os
+
 
 def make_debug_true():
     file_name = "options_user.py"
-    with open(file_name  , "r") as f:
+    with open(file_name, "r") as f:
         content = ""
         lines = f.readlines()
-        for line in lines : 
-            if "DEBUG =" not in line :
-                content += line 
+        for line in lines:
+            if "DEBUG =" not in line:
+                content += line
             else:
-                content += "DEBUG = True" 
-    with open(file_name , "w+") as f:
-        f.write(content) 
+                content += "DEBUG = True"
+    with open(file_name, "w+") as f:
+        f.write(content)
 
-            
 
 def test_process_initial():
     proc = subprocess.Popen(
@@ -36,7 +35,6 @@ def test_process_initial():
     assert os.path.exists("Output")
     assert os.path.exists("input/example.dta")
 
-    
     make_debug_true()
 
     proc = subprocess.Popen(
@@ -50,4 +48,3 @@ def test_process_initial():
     if stderr:
         print("Error:", stderr)
     # assert proc.returncode == 0
-    

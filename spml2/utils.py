@@ -56,7 +56,10 @@ def save_pip_freeze(options: Options):
     file_name = name_format_pip_freeze(options)
     try:
         result = subprocess.run(
-            [ "python" , "-m" , "pip", "freeze"], capture_output=True, text=True, check=True
+            ["python", "-m", "pip", "freeze"],
+            capture_output=True,
+            text=True,
+            check=True,
         )
         with open(file_name, "w") as f:
             f.write(result.stdout)

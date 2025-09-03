@@ -33,6 +33,7 @@ class Options:
         shap_plots: bool = False,
         roc_plots: bool = True,
         shap_sample_size: int = 100,
+        shap_summary_plot_type: str = "dot",  # "layered_violin"
         pipeline: ImbPipeline | None = None,
         # search_type
         search_type: str = "random",
@@ -41,14 +42,13 @@ class Options:
         data: pd.DataFrame | None = None,
         stratify: bool = True,
         random_state: int = 42,
-        raise_error: bool = True 
+        raise_error: bool = True,
     ):
+        self.shap_summary_plot_type = shap_summary_plot_type
         self.raise_error = raise_error
         self.random_state = random_state
         self.stratify = stratify
         self.data: pd.DataFrame | None = data
-        # given_args = locals()
-        # self.hash_ = options_hash_from_dict(given_args)
         self.categorical_cols: PathStr | None = categorical_cols
         self._given_pipeline: ImbPipeline | None = pipeline
         self.search_type: str = search_type

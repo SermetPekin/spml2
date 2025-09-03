@@ -96,7 +96,7 @@ class DataAbstract(ABC):
 
     @staticmethod
     def check_data2(df: pd.DataFrame, options: Options, output_area=None):
-        if not options.data is None : 
+        if options.data is not None:
             df = options.data
             warnings.warn("Using DataFrame provided in options.data")
             time.sleep(2)

@@ -23,12 +23,14 @@ from .utils import (
     local_print_df,
 )
 
+
 class TargetColumnNameNotFound(Exception):
     pass
 
 
 class TargetColumnNotBinary(Exception):
     pass
+
 
 class SpecialValueError(Exception):
     def __init__(self, message, details=None, friendly_message=None):

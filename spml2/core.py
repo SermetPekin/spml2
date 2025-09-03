@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
 import time
+
 #
 import numpy as np
 import pandas as pd
@@ -28,7 +29,8 @@ from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.model_selection import GridSearchCV
 from typing import Literal
-# 
+
+#
 from .data_ import assert_columns_exist, assert_numerical_cols
 from .models import models as DEFAULT_MODELS
 from .options import Options
@@ -147,10 +149,14 @@ def train_and_search(
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
 
-    get_pipeline(options, preprocessor, model)
+    options = get_pipeline(options, preprocessor, model)
     check_pipeline(options)
     search = get_search_type(options, param_grid)
-    duration = fit_and_measure(search, X_train, y_train)
+    start = datetime.now()
+    search.fit(X_train, y_train)
+    end = datetime.now()
+    duration = end - start
+    # duration = fit_and_measure(search, X_train, y_train)
     return search.best_estimator_, duration, search.best_params_
 
 
@@ -224,14 +230,17 @@ class ActionAbstract:
         if not self.options.shap_plots:
             return
         from .shap_local import ShapTree, ShapLinear, ShapAuto
-        
+
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
         rows = self.options.shap_sample_size
         explainer = ShapAuto(model, X.head(rows))
-        try : 
-            explainer.summary_plot(save_path=folder / f"shap_summary_{result_name}.png")
-        except Exception as e :
+        try:
+            explainer.summary_plot(
+                save_path=folder / f"shap_summary_{result_name}.png",
+                plot_type=self.options.shap_summary_plot_type,
+            )
+        except Exception as e:
             if self.options.raise_error:
                 raise e
             else:
