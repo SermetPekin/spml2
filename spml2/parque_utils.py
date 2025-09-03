@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def df_to_stata(df, file_path, version=118) -> None:
+def df_to_stata(df, file_path: Path, version=118) -> None:
     df.columns = [x.strip().replace(" ", "_") for x in df.columns]
     df.to_stata(file_path, version=version, write_index=False)
 

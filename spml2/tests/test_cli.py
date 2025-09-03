@@ -1,8 +1,6 @@
 from tempfile import tempdir
 from spml2.cli import init_user_files
-
 from pathlib import Path
-
 import subprocess
 import sys
 import subprocess
@@ -13,14 +11,12 @@ import sys
 import time
 import os
 import signal
-
 import pytest
 
 
 def test_init_user_files():
     folder = Path(tempdir)
     init_user_files(folder)
-
     # Check if the user files were created
     assert (folder / "models_user.py").exists()
     assert (folder / "options_user.py").exists()

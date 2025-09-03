@@ -7,19 +7,12 @@ import pandas as pd
 from pathlib import Path
 import importlib.util
 import warnings
-
 from spml2.options import Options
 from spml2.utils import get_data
 
-
 warnings.filterwarnings("ignore", module="pyarrow")
+st.set_page_config(page_title="SPML2 User Interface", page_icon="­ЪДа", layout="wide")
 
-
-st.set_page_config(
-    page_title="SPML2 User Interface",   
-    page_icon="🧠",                     
-    layout="wide"
-)
 
 def import_user_module(module_name, file_name):
     user_path = Path.cwd() / file_name
@@ -32,7 +25,6 @@ def import_user_module(module_name, file_name):
 
 models_user = import_user_module("models_user", "models_user.py")
 options_user = import_user_module("options_user", "options_user.py")
-
 from options_user import (
     TEST_MODE,
     DEBUG,
@@ -56,7 +48,6 @@ def get_hash(options: dict):
 
 
 MODELS = models_user.models
-
 test_mode = st.sidebar.checkbox("Test Mode", value=TEST_MODE)
 debug = st.sidebar.checkbox("Debug Mode", value=DEBUG)
 target_name = st.sidebar.text_input("Target Column", value=TARGET_NAME)
@@ -80,12 +71,10 @@ input_folder = st.text_input(
     value=str(ROOT),
     help="You can enter an absolute path here to select a different data folder.",
 )
-
 if st.button("Quit App"):
     st.warning(
         "You can now close this tab or stop the server by pressing Ctrl+C in the terminal where Streamlit was started."
     )
-
 st.title("SPML2 User Interface")
 
 
@@ -111,9 +100,7 @@ if os.path.isdir(input_folder):
 else:
     st.warning("Input folder does not exist.")
     selected_file = None
-
 workflow = st.radio("Choose workflow", ["Run fresh", "Process cache"])
-
 current_options = {
     "test_mode": test_mode,
     "debug": debug,
@@ -128,17 +115,13 @@ current_options = {
     "roc_plots": roc_plots,
     "shap_plots": shap_plots,
 }
-
 hash_value = get_hash(current_options)
 current_options2 = current_options.copy()
-
 current_options2["hash"] = hash_value
-
 st.json(current_options2)
 col1, col2 = st.columns([2, 3])
 output_area = col1.empty()
 plot_area = col2.empty()
-
 # Initialize output buffer in session state
 if "output_buffer" not in st.session_state:
     st.session_state["output_buffer"] = ""
@@ -146,7 +129,6 @@ if "output_buffer" not in st.session_state:
 
 def get_info_df(selected_file, options):
     df = get_data(options)
-
     columns_list = df.columns.tolist()
     t = f"""
 **Shape:** {df.shape}
@@ -181,7 +163,6 @@ if st.button("Run"):
                 process_cache_with_output(
                     options, MODELS, output_area=output_area, plot_area=plot_area
                 )
-
         st.success("Done!")
     else:
         st.error("Please select a file.")

@@ -7,12 +7,10 @@ import random
 import string
 import joblib
 from typing import Any
-
 from .options import Options
 
 
 def local_print(*args, **kwargs):
-
     if "output_area" in kwargs:
         output_area = kwargs["output_area"]
     else:
@@ -34,7 +32,6 @@ def local_print_df(*args, **kwargs):
     try:
         for arg in args:
             if output_area is not None and isinstance(arg, pd.DataFrame):
-
                 output_area.dataframe(arg)
                 shown = True
             elif output_area is not None and isinstance(arg, pd.Series):
@@ -59,7 +56,7 @@ def save_pip_freeze(options: Options):
     file_name = name_format_pip_freeze(options)
     try:
         result = subprocess.run(
-            ["pip", "freeze"], capture_output=True, text=True, check=True
+            [ "python" , "-m" , "pip", "freeze"], capture_output=True, text=True, check=True
         )
         with open(file_name, "w") as f:
             f.write(result.stdout)
@@ -69,7 +66,6 @@ def save_pip_freeze(options: Options):
 
 
 def results_report(results, df, options, output_area=None, plot_area=None, save=True):
-    # 5. Convert results to DataFrame
     results_df = pd.DataFrame(results)
     print(
         results_df[["Model", "ROC AUC", "F1 Score", "duration"]].sort_values(
@@ -81,11 +77,9 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
         f"\n   Best Model: {best_model_result['Model']} (ROC AUC: {best_model_result['ROC AUC']:.4f})",
         output_area=output_area,
     )
-    # local_print("\Detailed report:", output_area=output_area)
     report = pd.DataFrame(best_model_result["Classification Report"])
     print(results_df)
     print(report)
-
     if save:
         save_results(
             df, "Together", results_df, best_model_result, report, options=options
@@ -94,6 +88,10 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
 
 def check_cols(_df, options):
     cols = _df.columns
+    if isinstance(options.data, pd.DataFrame):
+        cols = _df.columns
+        _df = options.data
+        return
 
     def check(x: str):
         return x in cols
@@ -135,6 +133,7 @@ def create_parque_files_for_folder(folder):
 
 
 def initial_data_check(options: Options):
+
     print(
         "initial check for data formats. This will create Parquet file for stata files"
     )
@@ -149,14 +148,24 @@ def save_df_to_parquet(df, filepath, compression="snappy"):
         print(f"Error saving DataFrame to Parquet: {e}")
 
 
-def get_original_data(options: Options):
+def get_original_data(options: Options) -> pd.DataFrame:
+    if not isinstance(options.data, type(None)):
+        return options.data
     real_df_path = options.real_df_path
-    if real_df_path.suffix == ".dta":
+    suffix = real_df_path.suffix.lower()
+    if suffix == ".dta":
         df = pd.read_stata(real_df_path)
-    elif real_df_path.suffix == ".parquet":
+    elif suffix == ".parquet":
         df = pd.read_parquet(real_df_path, engine="pyarrow")
+    elif suffix in [".xlsx", ".xls"]:
+        df = pd.read_excel(real_df_path)
+    elif suffix == ".csv":
+        df = pd.read_csv(real_df_path)
     else:
-        raise ValueError("Original file format not expected")
+        raise ValueError(
+            "Only accepts Stata (.dta), Parquet (.parquet), Excel (.xlsx, .xls), or CSV (.csv) file formats!",
+            real_df_path,
+        )
     return df
 
 
@@ -194,7 +203,6 @@ def get_large_data(options: Options) -> pd.DataFrame:
         raise
 
 
-# ================ Helper Functions ======================
 def create_test_df(options: Options) -> None:
     df = get_original_data(options)
     if options.test_df_size >= len(df):

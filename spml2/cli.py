@@ -15,7 +15,6 @@ def create_from_content(
     current_folder: str = ".",
     force: bool = False,
 ):
-
     file_path = Path(current_folder) / f"{module_}.py"
     if not file_path.exists() or force:
         with open(file_path, "w") as dst:
@@ -55,12 +54,10 @@ def get_package_file_path(filename):
 def console_main():
     help_message = """\
 SPML2 Command Line Interface
-
 Usage:
   spml2 web         # Launch the web UI
   spml2 init        # Create example user files in the current directory
   spml2 init -f     # Force overwrite example user files even if they exist
-
 Examples:
   spml2 web
   spml2 web --server.port 8502
@@ -70,14 +67,11 @@ Examples:
     if len(sys.argv) < 2:
         print(help_message)
         sys.exit(1)
-
     cmd = sys.argv[1].lower()
     create_example_files()
     if cmd in ["help", "--help", "-h"]:
-
         print(help_message)
         sys.exit(0)
-
     if cmd == "web":
         init_user_files()
         web_path = get_package_file_path("web.py")
@@ -88,7 +82,6 @@ Examples:
         force = len(sys.argv) > 2 and sys.argv[2] == "-f"
         init_user_files(force=force)
         sys.exit(0)
-
     # Unknown command
     print(f"Unknown command: {cmd}\n")
     print(help_message)

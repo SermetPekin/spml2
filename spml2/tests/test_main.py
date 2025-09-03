@@ -10,14 +10,12 @@ from pathlib import Path
 from spml2 import Options
 from spml2 import Process, Process_cache
 
-
 try:
     from models_user import models
 except ImportError:
     models = None
     # Handle missing models_user module
     print("Warning: models_user module not found. Using default models.")
-
 TEST_MODE = True  # Enable test mode for quick runs
 DEBUG = True  # Enable debug mode for extra checks
 TARGET_NAME = "target"  # Name of the target column
@@ -29,7 +27,6 @@ NUMERICAL_COLS = None  # List of numerical columns (None = infer from data)
 SAMPLING_STRATEGY = "auto"  # SMOTE sampling strategy ('auto' recommended)
 N_SPLITS = 5
 SHAP_PLOTS = False
-
 options = Options(
     test_mode=TEST_MODE,
     debug=DEBUG,
@@ -94,6 +91,7 @@ def test_get_data_test_mode(monkeypatch):
         n_splits = 2
         test_file_name = "dummy.parquet"
         real_df_path = "dummy.dta"
+        data = None
 
     # Patch get_test_data to return a DataFrame
     monkeypatch.setattr(
