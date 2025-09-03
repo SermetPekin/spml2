@@ -56,7 +56,7 @@ def save_pip_freeze(options: Options):
     file_name = name_format_pip_freeze(options)
     try:
         result = subprocess.run(
-            ["pip", "freeze"], capture_output=True, text=True, check=True
+            [ "python" , "-m" , "pip", "freeze"], capture_output=True, text=True, check=True
         )
         with open(file_name, "w") as f:
             f.write(result.stdout)
@@ -66,7 +66,6 @@ def save_pip_freeze(options: Options):
 
 
 def results_report(results, df, options, output_area=None, plot_area=None, save=True):
-    # 5. Convert results to DataFrame
     results_df = pd.DataFrame(results)
     print(
         results_df[["Model", "ROC AUC", "F1 Score", "duration"]].sort_values(
@@ -78,7 +77,6 @@ def results_report(results, df, options, output_area=None, plot_area=None, save=
         f"\n   Best Model: {best_model_result['Model']} (ROC AUC: {best_model_result['ROC AUC']:.4f})",
         output_area=output_area,
     )
-    # local_print("\Detailed report:", output_area=output_area)
     report = pd.DataFrame(best_model_result["Classification Report"])
     print(results_df)
     print(report)
@@ -94,7 +92,6 @@ def check_cols(_df, options):
         cols = _df.columns
         _df = options.data
         return
-        # raise ValueError("options.data should be None when calling this function")
 
     def check(x: str):
         return x in cols
@@ -206,7 +203,6 @@ def get_large_data(options: Options) -> pd.DataFrame:
         raise
 
 
-# ================ Helper Functions ======================
 def create_test_df(options: Options) -> None:
     df = get_original_data(options)
     if options.test_df_size >= len(df):
