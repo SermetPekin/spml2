@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
 from time import time
 import pandas as pd
+import warnings
 
-from .data_ import prepare_data, check_data_with_options
+from .data_ import prepare_data, set_numerical_categ_cols
 from .options import Options
+from .utils import (
+    print_report_initial,
+    local_print,
+    local_print_df,
+)
 
 
 class DataAbstract(ABC):
@@ -17,23 +23,20 @@ class DataAbstract(ABC):
         output_area=None,
     ):
         self.options = options
-
         self.df = df.copy()
         self.target_name = target_name or df.columns[0]
         self.numerical_cols = numerical_cols
         self.categorical_cols = categorical_cols
         self.output_area = output_area
-        self._infer_column_types()
-        self.validate()
-
         self.check_data()
+        self._infer_column_types()  # TODO
+        self.validate()
 
     def check_data(self) -> None:
 
-        self.df, self.options = check_data_with_options(
+        self.df, self.options = set_numerical_categ_cols(
             self.df, self.options, output_area=self.output_area
         )
-        # return self.df, self.options
 
     def _infer_column_types(self):
         # Infer numerical/categorical columns if not provided
@@ -93,12 +96,10 @@ class DataAbstract(ABC):
     @staticmethod
     def check_data2(df: pd.DataFrame, options: Options, output_area=None):
 
-        df, options = check_data_with_options(df, options, output_area=output_area)
+        df, options = set_numerical_categ_cols(df, options, output_area=output_area)
         return df, options
 
     def get_X_y(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-
-        # self.df, self.options = self.check_data2(self.df, self.options, output_area=output_area)
 
         X_train, X_test, y_train, y_test = prepare_data(
             self.df, self.options, output_area=self.output_area
@@ -130,10 +131,14 @@ class DataAbstract(ABC):
         return t
 
 
+# -- Data Preparation
 def get_data_abstract_with_options(options, df, output_area=None) -> DataAbstract:
 
     if not isinstance(options.data, type(None)):
         df = options.data
+        warnings.warn("Using DataFrame provided in options.data")
+        time.sleep(2)
+    print_report_initial(df, options, output_area=output_area)
 
     return DataAbstract(
         options=options,

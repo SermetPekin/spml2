@@ -123,6 +123,23 @@ def get_pipeline(options: Options, preprocessor: Any, model: Any) -> ImbPipeline
     return options
 
 
+def check_pipeline(options: Options):
+    assert isinstance(
+        options.pipeline, ImbPipeline
+    ), "Pipeline is not an instance of ImbPipeline"
+    assert options.categorical_cols is not None
+    assert options.numerical_cols is not None
+    # print(options.categorical_cols, options.numerical_cols)
+
+
+def fit_and_measure(search, X_train, y_train):
+    start = datetime.now()
+    search.fit(X_train, y_train)
+    end = datetime.now()
+    duration = end - start
+    return duration
+
+
 def train_and_search(
     model: Any,
     preprocessor: Any,
@@ -132,22 +149,10 @@ def train_and_search(
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
 
-    # assert isinstance(options.pipeline, ImbPipeline), "Pipeline is not an instance of ImbPipeline"
-    # assert options.categorical_cols
-    # assert options.numerical_cols
-    # print(options.categorical_cols , options.numerical_cols)
-
-    # assert options.categorical_cols
-    # assert options.numerical_cols
-
-    # options.pipeline will be updated below
     get_pipeline(options, preprocessor, model)
+    check_pipeline(options)
     search = get_search_type(options, param_grid)
-
-    start = datetime.now()
-    search.fit(X_train, y_train)
-    end = datetime.now()
-    duration = end - start
+    duration = fit_and_measure(search, X_train, y_train)
     return search.best_estimator_, duration, search.best_params_
 
 

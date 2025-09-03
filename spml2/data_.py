@@ -87,11 +87,9 @@ def assert_numerical_cols(df, options):
             )
 
 
-def check_data_with_options(df: pd.DataFrame, options: Options, output_area=None):
+def set_numerical_categ_cols(df: pd.DataFrame, options: Options, output_area=None):
 
     df[options.target_name] = pd.to_numeric(df[options.target_name], downcast="integer")
-    local_print_df(df.head(), output_area=output_area)
-    # DEBUG: Print column types and assignments
     print("\n[DEBUG] DataFrame dtypes:")
     print(df.dtypes)
     if options.numerical_cols is None and options.categorical_cols is None:
@@ -131,14 +129,9 @@ def check_data_with_options(df: pd.DataFrame, options: Options, output_area=None
 def prepare_data(
     df: pd.DataFrame, options: Options, output_area: Any = None
 ) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
-    if not isinstance(options.data, type(None)):
-        df = options.data
-        # this is for test data provided in the options
-        warnings.warn("Using DataFrame provided in options.data")
-        time.sleep(2)
+
     print_report_initial(df, options, output_area=output_area)
     target_name_was = options.target_name
-    # If target_name is None, use the first column
     if options.target_name is None:
         options.target_name = df.columns[0]
         msg = f"No target column specified. Using the first column: '{options.target_name}' as target."
@@ -148,7 +141,6 @@ def prepare_data(
     if options.target_name not in df.columns:
         msg = f"Target name '{options.target_name}' not found in DataFrame columns."
         raise TargetColumnNameNotFound(msg)
-    # Check if the target column is suitable for binary classification
     target_values = df[options.target_name].dropna().unique()
     if len(target_values) != 2:
         if target_name_was is None:
@@ -156,8 +148,7 @@ def prepare_data(
         target_values_str = ", ".join(map(str, (list(target_values[0:3]) + ["..."])))
         msg += f"\nTarget column '{options.target_name}' is not binary (unique values: {target_values_str}). Please provide a binary target column."
         raise TargetColumnNotBinary(msg)
-    df, options = check_data_with_options(df, options, output_area=output_area)
-    local_print_df(df.head(), output_area=output_area)
+
     X = df.drop(options.target_name, axis=1)
     y = df[options.target_name]
     X_train, X_test, y_train, y_test = train_test_split(
