@@ -16,6 +16,7 @@ from sklearn.model_selection import (
     StratifiedKFold,
     RandomizedSearchCV,
 )
+from sklearn.exceptions import NotFittedError
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     roc_auc_score,
@@ -297,6 +298,7 @@ class ActionAbstract:
             result_name = self.get_result_name(model_name)
             save_model(best_model, result_name, self.options)
             save_metrics(metrics, result_name, self.options)
+
             # Shap Summary plot
             if self.options.shap_plots:
                 arr = best_model.named_steps["preprocessor"].transform(X_test)
@@ -309,15 +311,21 @@ class ActionAbstract:
                         feature_names += cols
                     elif name == "cat":
                         if hasattr(transformer, "get_feature_names_out"):
-                            feature_names += list(
-                                transformer.get_feature_names_out(cols)
-                            )
+                            try:
+                                feature_names += list(
+                                    transformer.get_feature_names_out(cols)
+                                )
+                            except NotFittedError:
+                                # Fallback: encoder not fitted, use original column names
+                                feature_names += cols
                         else:
                             feature_names += cols
+
                 X_test_processed = pd.DataFrame(arr, columns=feature_names)
                 self.shap_plots(
                     best_model.named_steps["model"], X_test_processed, result_name
                 )
+
             # ROC AUC plot
             if self.options.roc_plots:
                 plot_roc_curve(
