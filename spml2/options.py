@@ -39,7 +39,11 @@ class Options:
         # search_kwargs
         search_kwargs: dict | None = None,
         data: pd.DataFrame | None = None,
+        stratify: bool = True,
+        random_state: int = 42 
     ):
+        self.random_state = random_state
+        self.stratify = stratify
         self.data: pd.DataFrame | None = data
         # given_args = locals()
         # self.hash_ = options_hash_from_dict(given_args)
