@@ -5,8 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
 import time
-
-# Third-party
+#
 import numpy as np
 import pandas as pd
 from rich import print
@@ -29,8 +28,7 @@ from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.model_selection import GridSearchCV
 from typing import Literal
-
-# Local
+# 
 from .data_ import assert_columns_exist, assert_numerical_cols
 from .models import models
 from .options import Options
@@ -226,12 +224,18 @@ class ActionAbstract:
         if not self.options.shap_plots:
             return
         from .shap_local import ShapTree, ShapLinear, ShapAuto
-
+        
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
         rows = self.options.shap_sample_size
         explainer = ShapAuto(model, X.head(rows))
-        explainer.summary_plot(save_path=folder / f"shap_summary_{result_name}.png")
+        try : 
+            explainer.summary_plot(save_path=folder / f"shap_summary_{result_name}.png")
+        except Exception as e :
+            if self.options.raise_error:
+                raise e
+            else:
+                warnings.warn(f"Shap summary plot failed for {result_name}: {e}")
 
     def should_I_pass(self, model_name: str) -> bool:
         if str(model_name).strip().startswith("#") or "cancelled" in model_name.lower():
