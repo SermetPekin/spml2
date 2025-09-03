@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 import copy
 import warnings
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
+import time
 
 # Third-party
 import numpy as np
