@@ -65,7 +65,16 @@ def assert_columns_exist(
         err.raise_with_notice()
 
 
+def convert_categorical_cols_str_type(
+    df: pd.DataFrame, options: Options
+) -> pd.DataFrame:
+    for col in options.categorical_cols:
+        df[col] = df[col].astype(str)
+    return df
+
+
 def assert_numerical_cols(df, options):
+    convert_categorical_cols_str_type(df, options)
     # Assert all numerical columns are numeric
     for col in options.numerical_cols:
         if not pd.api.types.is_numeric_dtype(df[col]):
@@ -74,17 +83,20 @@ def assert_numerical_cols(df, options):
                 details={"column": col, "dtype": str(df[col].dtype)},
                 friendly_message=f"Column '{col}' should be numeric. Please check your data and options.",
             )
+    prob_cols = []
     # Assert all categorical columns are object/string
     for col in options.categorical_cols:
         if not (
             pd.api.types.is_object_dtype(df[col])
             or pd.api.types.is_string_dtype(df[col])
         ):
-            raise SpecialValueError(
-                f"Column '{col}' in categorical_cols is not string/object!",
-                details={"column": col, "dtype": str(df[col].dtype)},
-                friendly_message=f"Column '{col}' should be string or object. Please check your data and options.",
-            )
+            prob_cols.append(col)
+            if prob_cols:
+                raise SpecialValueError(
+                    f"Columns '{', '.join(prob_cols)}' in categorical_cols is not string/object!",
+                    details={"column": prob_cols, "dtype": str(df[prob_cols].dtypes)},
+                    friendly_message=f"Categorical columns '{', '.join(prob_cols)}' should be string or object. Please check your data and options.",
+                )
 
 
 def set_numerical_categ_cols(df: pd.DataFrame, options: Options, output_area=None):
@@ -168,4 +180,4 @@ def prepare_data(
             random_state=random_state,
         )
 
-    return X_train, X_test, y_train, y_test   
+    return X_train, X_test, y_train, y_test
