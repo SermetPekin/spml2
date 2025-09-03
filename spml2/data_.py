@@ -73,8 +73,17 @@ def convert_categorical_cols_str_type(
     return df
 
 
-def assert_numerical_cols(df, options):
-    convert_categorical_cols_str_type(df, options)
+def limit_df_if_both_given(df: pd.DataFrame, options: Options):
+
+    if options.numerical_cols is not None and options.categorical_cols is not None:
+        df = df[
+            options.numerical_cols + options.categorical_cols + [options.target_name]
+        ]
+    return df
+
+
+def assert_numerical_cols(df: pd.DataFrame, options: Options):
+
     # Assert all numerical columns are numeric
     for col in options.numerical_cols:
         if not pd.api.types.is_numeric_dtype(df[col]):
@@ -84,6 +93,10 @@ def assert_numerical_cols(df, options):
                 friendly_message=f"Column '{col}' should be numeric. Please check your data and options.",
             )
     prob_cols = []
+    # Remove target_name from categorical_cols if present
+    options.categorical_cols = [
+        x for x in options.categorical_cols if x not in [options.target_name]
+    ]
     # Assert all categorical columns are object/string
     for col in options.categorical_cols:
         if not (
@@ -99,7 +112,9 @@ def assert_numerical_cols(df, options):
                 )
 
 
-def set_numerical_categ_cols(df: pd.DataFrame, options: Options, output_area=None):
+def set_numerical_categ_cols(
+    df: pd.DataFrame, options: Options, output_area: Any = None
+):
 
     df[options.target_name] = pd.to_numeric(df[options.target_name], downcast="integer")
     print("\n[DEBUG] DataFrame dtypes:")
@@ -131,10 +146,15 @@ def set_numerical_categ_cols(df: pd.DataFrame, options: Options, output_area=Non
             for col in df.columns
             if col not in options.categorical_cols and col != options.target_name
         ]
+
+    convert_categorical_cols_str_type(df, options)
+    limit_df_if_both_given(df, options)
+
     print("[DEBUG] Numerical columns:", options.numerical_cols)
     print("[DEBUG] Categorical columns:", options.categorical_cols)
     print("[DEBUG] Target column:", options.target_name)
     assert_numerical_cols(df, options)
+
     return df, options
 
 
