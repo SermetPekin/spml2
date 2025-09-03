@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
 
-# Third-party
+
 import numpy as np
 from rich import print
 from sklearn.preprocessing import OneHotEncoder
@@ -17,7 +17,7 @@ from sklearn.model_selection import (
     RandomizedSearchCV,
 )
 
-# Local
+
 from .options import Options
 from .utils import (
     print_report_initial,
@@ -151,11 +151,21 @@ def prepare_data(
 
     X = df.drop(options.target_name, axis=1)
     y = df[options.target_name]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=options.test_ratio,
-        random_state=42,
-        stratify=y,
-    )
-    return X_train, X_test, y_train, y_test  # , options.categorical_cols, df
+    random_state = options.random_state
+    if options.stratify:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=options.test_ratio,
+            random_state=random_state,
+            stratify=y,
+        )
+    else:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X,
+            y,
+            test_size=options.test_ratio,
+            random_state=random_state,
+        )
+
+    return X_train, X_test, y_train, y_test   
