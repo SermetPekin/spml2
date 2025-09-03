@@ -7,7 +7,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
 
-
 import numpy as np
 from rich import print
 from sklearn.preprocessing import OneHotEncoder
@@ -17,7 +16,6 @@ from sklearn.model_selection import (
     RandomizedSearchCV,
 )
 
-
 from .options import Options
 from .utils import (
     print_report_initial,
@@ -25,14 +23,12 @@ from .utils import (
     local_print_df,
 )
 
-
 class TargetColumnNameNotFound(Exception):
     pass
 
 
 class TargetColumnNotBinary(Exception):
     pass
-
 
 class SpecialValueError(Exception):
     def __init__(self, message, details=None, friendly_message=None):
@@ -75,9 +71,21 @@ def convert_categorical_cols_str_type(
 
 def limit_df_if_both_given(df: pd.DataFrame, options: Options):
 
+    current_cols = df.columns.tolist()
+    given_columns = (
+        options.numerical_cols + options.categorical_cols + [options.target_name]
+    )
+    none_cols = set(given_columns) - set(current_cols)
+
+    if none_cols:
+        msg = f"Warning: The following specified columns are not in the DataFrame and will be ignored: {list(none_cols)}"
+        warnings.warn(msg)
+        print(msg)
+        time.sleep(2)
+
     if options.numerical_cols is not None and options.categorical_cols is not None:
-        df = df[
-            options.numerical_cols + options.categorical_cols + [options.target_name]
+        df = df.loc[
+            :, options.numerical_cols + options.categorical_cols + [options.target_name]
         ]
     return df
 
