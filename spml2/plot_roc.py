@@ -59,4 +59,6 @@ def plot_roc_curve(
             plt.show()
         plt.close()
     except Exception as e:
+        if options.raise_error:
+            raise e
         print(f"An error occurred while creating the ROC curve: {e}")
