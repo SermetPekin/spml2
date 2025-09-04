@@ -4,9 +4,9 @@ import time
 import pandas as pd
 import warnings
 
-from .data_ import prepare_data, set_numerical_categ_cols
-from .options import Options
-from .utils import (
+from .processing import prepare_data, set_numerical_categ_cols
+from ..options import Options
+from ..utils import (
     print_report_initial,
     local_print,
     local_print_df,

@@ -3,8 +3,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .utils import local_print, local_print_df
-from .options import Options
+from spml2.utils.general import local_print, local_print_df
+from spml2.options import Options
 
 
 class FeatureImportancesAbstract(ABC):
@@ -84,14 +84,17 @@ def save_feature_importances_basic(
 
     if isinstance(importances, np.ndarray):
         if importances.shape[0] != len(features):
-            print(f"Warning: importances shape {importances.shape} does not match number of features {len(features)}")
-            return   
-        feature_importances = pd.DataFrame({"features": features, "importances": importances})
+            print(
+                f"Warning: importances shape {importances.shape} does not match number of features {len(features)}"
+            )
+            return
+        feature_importances = pd.DataFrame(
+            {"features": features, "importances": importances}
+        )
         return save_feature_df(feature_importances, result_name, options)
 
-    
     if isinstance(importances, pd.DataFrame):
-       return save_feature_df(importances, result_name, options)
+        return save_feature_df(importances, result_name, options)
 
     if importances is not None:
         feature_importances = pd.DataFrame(
@@ -127,7 +130,7 @@ def save_feature_importances_SKLEARN(
 
 
 def save_feature_df(feat_df, result_name, options):
-    if "importances" in feat_df.columns: 
+    if "importances" in feat_df.columns:
         feat_df = feat_df.sort_values(by="importances", ascending=False)
     print(f"Saving feature importances for {result_name}...")
     local_print_df(feat_df)
@@ -138,12 +141,18 @@ def save_feature_df(feat_df, result_name, options):
 
 
 def save_feature_importances(
-    best_model:Any, options:Options, result_name:str, features:list, X_test:pd.DataFrame, y_test:pd.Series, output_area=None
+    best_model: Any,
+    options: Options,
+    result_name: str,
+    features: list,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    output_area=None,
 ):
-    fncs = [save_feature_importances_SKLEARN  ] # save_feature_importances_basic
-    if options._dev : 
-        fncs = [save_feature_importances_SKLEARN ,save_feature_importances_basic ] # 
-    
+    fncs = [save_feature_importances_SKLEARN]  # save_feature_importances_basic
+    if options._dev:
+        fncs = [save_feature_importances_SKLEARN, save_feature_importances_basic]  #
+
     for fnc in fncs:
         try:
             fnc(
@@ -156,7 +165,6 @@ def save_feature_importances(
                 output_area=output_area,
             )
         except Exception as e:
-            if options.raise_error and options.debug and options._dev :
-                
-               raise e
-            
+            if options.raise_error and options.debug and options._dev:
+
+                raise e

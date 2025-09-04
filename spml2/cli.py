@@ -3,8 +3,10 @@ import subprocess
 from rich import print
 import os
 from pathlib import Path
-from spml2.utils_init import create_example_files
 import warnings
+
+from spml2.utils.utils_init import create_example_files
+
 
 warnings.filterwarnings("ignore")
 

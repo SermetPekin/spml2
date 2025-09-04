@@ -5,7 +5,8 @@ from dataclasses import dataclass
 import time
 from typing import Any
 from typing import TypeAlias
-from spml2.utils_hash import options_hash_from_dict
+
+# from spml2.utils.utils_hash import options_hash_from_dict
 from imblearn.pipeline import Pipeline as ImbPipeline
 
 PathStr: TypeAlias = str | Path
@@ -67,7 +68,9 @@ class Options:
         self.stratify = stratify
         self.random_state = random_state
         # Output
-        self.output_folder = Path(output_folder) if output_folder else self.root / "Output"
+        self.output_folder = (
+            Path(output_folder) if output_folder else self.root / "Output"
+        )
         # Feature Selection
         self.sampling_strategy = sampling_strategy
         self.n_splits = n_splits
@@ -96,6 +99,8 @@ class Options:
             self.debug = False
 
     def hash(self):
+        from spml2.utils.utils_hash import options_hash_from_dict
+
         if hasattr(self, "__dict__"):
             options_dict = self.__dict__
         else:

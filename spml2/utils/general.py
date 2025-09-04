@@ -7,7 +7,7 @@ import random
 import string
 import joblib
 from typing import Any
-from .options import Options
+from spml2.options import Options
 
 
 def local_print(*args, **kwargs):
@@ -154,7 +154,8 @@ def save_df_to_parquet(df, filepath, compression="snappy"):
 def get_original_data(options: Options) -> pd.DataFrame:
     if not isinstance(options.data, type(None)):
         return options.data
-    real_df_path = options.real_df_path
+
+    real_df_path = Path(options.real_df_path)
     suffix = real_df_path.suffix.lower()
     if suffix == ".dta":
         df = pd.read_stata(real_df_path)

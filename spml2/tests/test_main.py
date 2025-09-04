@@ -80,6 +80,10 @@ def test_local_print_and_df(capsys):
     "GITHUB_ACTIONS" in os.environ, reason="Skipping test in GitHub workflow"
 )
 def test_get_data_test_mode(monkeypatch):
+    df = pd.DataFrame({"target": [0, 1], "feature": [1.0, 2.0]})
+    dummy_path = Path(".") / "dummy.dta"
+    df.to_stata(dummy_path)
+
     class DummyOptions:
         test_mode = True
         test_df_size = 2
@@ -90,7 +94,7 @@ def test_get_data_test_mode(monkeypatch):
         sampling_strategy = "auto"
         n_splits = 2
         test_file_name = "dummy.parquet"
-        real_df_path = "dummy.dta"
+        real_df_path = Path("dummy.dta")
         data = None
 
     # Patch get_test_data to return a DataFrame
@@ -99,4 +103,4 @@ def test_get_data_test_mode(monkeypatch):
     )
     df = get_data(DummyOptions())
     assert isinstance(df, pd.DataFrame)
-    assert "x" in df.columns
+    assert "target" in df.columns

@@ -1,9 +1,10 @@
-from .options import Options
 from pathlib import Path
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score
 from typing import Any
 import pandas as pd
+
+from spml2.options import Options
 
 
 def plot_roc_curve(

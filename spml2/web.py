@@ -8,7 +8,7 @@ from pathlib import Path
 import importlib.util
 import warnings
 from spml2.options import Options
-from spml2.utils import get_data
+from spml2.utils.general import get_data
 
 warnings.filterwarnings("ignore", module="pyarrow")
 st.set_page_config(page_title="SPML2 User Interface", page_icon="­ЪДа", layout="wide")
@@ -42,7 +42,7 @@ from options_user import (
 
 
 def get_hash(options: dict):
-    from spml2.utils_hash import options_hash_from_dict
+    from spml2.utils.utils_hash import options_hash_from_dict
 
     return options_hash_from_dict(options)
 

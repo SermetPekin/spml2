@@ -32,10 +32,10 @@ from sklearn.model_selection import GridSearchCV
 from typing import Literal
 
 #
-from .data_ import assert_columns_exist, assert_numerical_cols
-from .models import models as DEFAULT_MODELS
-from .options import Options
-from .utils import (
+from spml2.data.processing import assert_columns_exist, assert_numerical_cols
+from spml2.models.base import models as DEFAULT_MODELS
+from spml2.options import Options
+from spml2.utils.general import (
     print_report_initial,
     initial_data_check,
     save_results_individual,
@@ -53,8 +53,8 @@ from .utils import (
     local_print,
     local_print_df,
 )
-from .plot_roc import plot_roc_curve
-from .feature_importances import (
+from spml2.plots.plot_roc import plot_roc_curve
+from spml2.feature_importances import (
     FeatureImportancesAbstract,
     FeatureImportancesBasic,
     FeatureImportancesSKLEARN,
@@ -262,7 +262,7 @@ class ActionAbstract:
         local_print(msg, output_area=self.output_area)
 
     def execute(self) -> "ActionAbstract":
-        from .data_abstract import get_data_abstract_with_options, DataAbstract
+        from .data.abstract import get_data_abstract_with_options, DataAbstract
 
         if self.name == "Fresh":
             save_pip_freeze(self.options)
