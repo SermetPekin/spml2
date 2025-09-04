@@ -17,7 +17,7 @@ from sklearn.model_selection import (
 )
 
 from spml2.options import Options
-from spml2.utils import (
+from spml2.utils.general import (
     print_report_initial,
     local_print,
     local_print_df,
