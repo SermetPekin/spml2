@@ -10,6 +10,7 @@ Welcome to smartrun’s documentation!
 
    home
    getting_started
+   options
 
 Indices and tables
 ==================
