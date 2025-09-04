@@ -4,9 +4,9 @@ import time
 import pandas as pd
 import warnings
 
-from .processing import prepare_data, set_numerical_categ_cols
-from ..options import Options
-from ..utils import (
+from spml2.data.processing import prepare_data, set_numerical_categ_cols
+from spml2.options import Options
+from spml2.utils.general import (
     print_report_initial,
     local_print,
     local_print_df,
