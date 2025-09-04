@@ -9,7 +9,7 @@ spml2-mltools
    :target: https://www.python.org/downloads/
    :alt: Supported Python versions
 
-.. image:: https://img.shields.io/github/license/SermetPekin/spml2-mltools.svg
+.. image:: https://img.shields.io/github/license/SermetPekin/spml2.svg
    :target: https://github.com/SermetPekin/spml2/blob/main/LICENSE
    :alt: License
 
