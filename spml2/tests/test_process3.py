@@ -1,4 +1,4 @@
-from spml2 import Options
+from spml2.options import Options
 import subprocess
 import sys
 import os

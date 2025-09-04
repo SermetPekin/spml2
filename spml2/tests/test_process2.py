@@ -5,13 +5,13 @@ from sklearn.preprocessing import StandardScaler
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
 from xgboost import XGBClassifier
-from spml2.options import Options
-from spml2 import Process, Process_cache
-from spml2.utils.parque_utils import df_to_stata
-from spml2.utils.utils_init import get_example_data2
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 
+from spml2.options import Options
+from spml2.core import Process, Process_cache
+from spml2.utils.parque_utils import df_to_stata
+from spml2.utils.utils_init import get_example_data2
 from spml2.data.abstract import DataAbstract
 
 

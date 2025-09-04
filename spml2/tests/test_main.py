@@ -2,7 +2,7 @@ import os
 import pytest
 import pandas as pd
 from spml2.options import Options
-from spml2.utils import get_data, local_print, local_print_df
+from spml2.utils.general import get_data, local_print, local_print_df
 from spml2 import Process, Process_cache
 
 # --- User-editable configuration ---
