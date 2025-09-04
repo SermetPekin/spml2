@@ -58,6 +58,18 @@ Available Options
      - 5
      - Number of cross-validation splits
    * - shap_plots
+     * - stratify
+       - bool
+       - True
+       - Whether to stratify train/test splits (recommended for classification)
+     * - random_state
+       - int
+       - 42
+       - Random seed for reproducibility
+     * - raise_error
+       - bool
+       - True
+       - Raise errors on while creating plots (set False to suppress and continue with the next model)
      - bool
      - False
      - Enable SHAP plots
