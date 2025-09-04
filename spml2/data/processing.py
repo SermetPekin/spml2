@@ -16,8 +16,8 @@ from sklearn.model_selection import (
     RandomizedSearchCV,
 )
 
-from ..options import Options
-from ..utils import (
+from spml2.options import Options
+from spml2.utils import (
     print_report_initial,
     local_print,
     local_print_df,
