@@ -78,11 +78,12 @@ def save_feature_importances_basic(
     output_area=None,
 ):
     importances = FeatureImportancesBasic(output_area).get(best_model, None, None, None)
+    result_name = f"feature_importances_basic_{result_name}"
     if importances is not None:
         feature_importances = pd.DataFrame(
             {"features": features, "importances": importances}
         )
-        result_name = f"feature_importances_basic_{result_name}"
+        
         return save_feature_df(feature_importances, result_name, options)
     else:
         print(f"Model {result_name} does not have feature_importances_ attribute.")
@@ -100,19 +101,21 @@ def save_feature_importances_SKLEARN(
     importances = FeatureImportancesSKLEARN(output_area).get(
         best_model, X_test, y_test, features
     )
+    result_name = f"feature_importances_SKLEARN_{result_name}"
     if isinstance(importances, pd.DataFrame):
         return save_feature_df(importances, result_name, options)
     if isinstance(importances, (tuple, list)):
         feature_importances = pd.DataFrame(
             {"features": features, "importances": importances}
         )
-        result_name = f"feature_importances_SKLEARN_{result_name}"
+        
         return save_feature_df(feature_importances, result_name, options)
     print(" Feature importances was not found with SKLEARN")
 
 
 def save_feature_df(feat_df, result_name, options):
     feat_df = feat_df.sort_values(by="importances", ascending=False)
+    print(f"Saving feature importances for {result_name}...")
     feat_df.to_excel(
         options.output_folder / f"{result_name}.xlsx",
         index=False,
@@ -123,6 +126,7 @@ def save_feature_importances(
     best_model, options, result_name, features, X_test, y_test, output_area=None
 ):
     fncs = [save_feature_importances_SKLEARN, save_feature_importances_basic]
+        
     for fnc in fncs:
         try:
             fnc(
@@ -135,4 +139,6 @@ def save_feature_importances(
                 output_area=output_area,
             )
         except Exception as e:
+            if options.raise_errors or options.debug:
+                raise e
             print(f"Error saving feature importances with {fnc.__name__}: {e}")
