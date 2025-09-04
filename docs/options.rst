@@ -49,6 +49,26 @@ Available Options
      - list[str] or None
      - None
      - List of numerical columns (None = infer automatically)
+   * - categorical_cols
+     - list[str] or None
+     - None
+     - List of categorical columns (None = infer automatically)
+   * - data
+     - pandas.DataFrame or None
+     - None
+     - Pass a custom DataFrame directly (advanced use; otherwise data is loaded from file)
+   * - stratify
+     - bool
+     - True
+     - Whether to stratify train/test splits (recommended for classification)
+   * - random_state
+     - int
+     - 42
+     - Random seed for reproducibility
+   * - raise_error
+     - bool
+     - True
+     - Raise errors while running models especially during plotting and getting feature importances (set False to suppress and continue)
    * - sampling_strategy
      - str or float
      - 'auto'
@@ -58,18 +78,6 @@ Available Options
      - 5
      - Number of cross-validation splits
    * - shap_plots
-     * - stratify
-       - bool
-       - True
-       - Whether to stratify train/test splits (recommended for classification)
-     * - random_state
-       - int
-       - 42
-       - Random seed for reproducibility
-     * - raise_error
-       - bool
-       - True
-       - Raise errors on while creating plots (set False to suppress and continue with the next model)
      - bool
      - False
      - Enable SHAP plots
