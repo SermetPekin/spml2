@@ -9,6 +9,7 @@ Welcome to smartrun’s documentation!
    :caption: Contents
 
    home
+   getting_started
 
 Indices and tables
 ==================
