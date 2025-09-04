@@ -17,64 +17,72 @@ SequenceStr: TypeAlias = list[str] | tuple[str, ...]
 class Options:
     def __init__(
         self,
+        # General
         test_mode: bool = False,
         debug: bool = False,
+        cache: bool = True,
+        raise_error: bool = True,
+        _dev: bool = False,
+        # Data
+        data: pd.DataFrame | None = None,
         target_name: str | None = None,
         test_df_size: int = 1000,
         test_ratio: float = 0.20,
         root: PathStr = Path("./input"),
-        real_df_filename="example.dta",
+        real_df_filename: str = "example.dta",
+        numerical_cols: SequenceStr | None = None,
+        categorical_cols: SequenceStr | None = None,
+        stratify: bool = True,
+        random_state: int = 42,
+        # Output
         output_folder: PathStr | None = None,
-        numerical_cols: PathStr | None = None,
-        categorical_cols: PathStr | None = None,
+        # Feature Selection
         sampling_strategy: FloatStr = "auto",
         n_splits: int = 5,
-        cache: bool = True,
+        # Pipeline/Search
+        pipeline: ImbPipeline | None = None,
+        search_type: str = "random",
+        search_kwargs: dict | None = None,
+        # SHAP/ROC
         shap_plots: bool = False,
         roc_plots: bool = True,
         shap_sample_size: int = 100,
         shap_summary_plot_type: str = "dot",  # "layered_violin"
-        pipeline: ImbPipeline | None = None,
-        # search_type
-        search_type: str = "random",
-        # search_kwargs
-        search_kwargs: dict | None = None,
-        data: pd.DataFrame | None = None,
-        stratify: bool = True,
-        random_state: int = 42,
-        raise_error: bool = True,
-        _dev :bool = False 
     ):
-        self._dev = _dev
-        self.shap_summary_plot_type = shap_summary_plot_type
+        # General
+        self.test_mode = test_mode
+        self.debug = debug
+        self.cache = cache
         self.raise_error = raise_error
-        self.random_state = random_state
+        self._dev = _dev
+        # Data
+        self.data = data
+        self.target_name = target_name
+        self.test_df_size = test_df_size
+        self.test_ratio = test_ratio
+        self.root = Path(root)
+        self.real_df_path = self.root / real_df_filename
+        self.numerical_cols = numerical_cols
+        self.categorical_cols = categorical_cols
         self.stratify = stratify
-        self.data: pd.DataFrame | None = data
-        self.categorical_cols: PathStr | None = categorical_cols
-        self._given_pipeline: ImbPipeline | None = pipeline
-        self.search_type: str = search_type
-        self.search_kwargs: dict | None = search_kwargs
-        self.pipeline: ImbPipeline | None = pipeline
-        self.test_ratio: float = test_ratio
-        self.shap_sample_size: int = shap_sample_size
-        self.roc_plots: bool = roc_plots
-        self.shap_plots: bool = shap_plots
-        self.n_splits: int = n_splits
-        self.cache: bool = cache
-        self.sampling_strategy: FloatStr = sampling_strategy
-        self.test_mode: bool = test_mode
-        self.debug: bool = debug
-        self.target_name: str | None = target_name
-        self.test_df_size: int = test_df_size
-        self.root: Path = Path(root)
-        self.real_df_path: Path = self.root / real_df_filename
-        self.output_folder: Path = (
-            output_folder if output_folder else self.root / "Output"
-        )
-        self.output_folder: Path = Path(self.output_folder)
-        self.numerical_cols: SequenceStr | None = numerical_cols
-        self.test_file_name: Path = self.real_df_path.with_stem(
+        self.random_state = random_state
+        # Output
+        self.output_folder = Path(output_folder) if output_folder else self.root / "Output"
+        # Feature Selection
+        self.sampling_strategy = sampling_strategy
+        self.n_splits = n_splits
+        # Pipeline/Search
+        self.pipeline = pipeline
+        self._given_pipeline = pipeline
+        self.search_type = search_type
+        self.search_kwargs = search_kwargs
+        # SHAP/ROC
+        self.shap_plots = shap_plots
+        self.roc_plots = roc_plots
+        self.shap_sample_size = shap_sample_size
+        self.shap_summary_plot_type = shap_summary_plot_type
+        # Derived attributes
+        self.test_file_name = self.real_df_path.with_stem(
             f"small_df_{self.test_df_size}" + self.real_df_path.stem
         ).with_suffix(".parquet")
         if not self.output_folder.exists():
