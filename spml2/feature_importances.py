@@ -83,7 +83,7 @@ def save_feature_importances_basic(
         feature_importances = pd.DataFrame(
             {"features": features, "importances": importances}
         )
-        
+
         return save_feature_df(feature_importances, result_name, options)
     else:
         print(f"Model {result_name} does not have feature_importances_ attribute.")
@@ -108,7 +108,7 @@ def save_feature_importances_SKLEARN(
         feature_importances = pd.DataFrame(
             {"features": features, "importances": importances}
         )
-        
+
         return save_feature_df(feature_importances, result_name, options)
     print(" Feature importances was not found with SKLEARN")
 
@@ -123,10 +123,10 @@ def save_feature_df(feat_df, result_name, options):
 
 
 def save_feature_importances(
-    best_model, options, result_name, features, X_test, y_test, output_area=None
+    best_model:Any, options:Options, result_name:str, features:list, X_test:pd.DataFrame, y_test:pd.Series, output_area=None
 ):
     fncs = [save_feature_importances_SKLEARN, save_feature_importances_basic]
-        
+
     for fnc in fncs:
         try:
             fnc(
@@ -139,6 +139,6 @@ def save_feature_importances(
                 output_area=output_area,
             )
         except Exception as e:
-            if options.raise_errors or options.debug:
+            if options.raise_error or options.debug:
                 raise e
             print(f"Error saving feature importances with {fnc.__name__}: {e}")
