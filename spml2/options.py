@@ -43,7 +43,9 @@ class Options:
         stratify: bool = True,
         random_state: int = 42,
         raise_error: bool = True,
+        _dev :bool = False 
     ):
+        self._dev = _dev
         self.shap_summary_plot_type = shap_summary_plot_type
         self.raise_error = raise_error
         self.random_state = random_state
