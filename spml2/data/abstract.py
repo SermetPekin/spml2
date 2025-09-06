@@ -14,6 +14,52 @@ from spml2.utils.general import (
 
 
 class DataAbstract(ABC):
+    @abstractmethod
+    def __init__(
+        self,
+        options: Options,
+        df: pd.DataFrame,
+        target_name: str = None,
+        numerical_cols=None,
+        categorical_cols=None,
+        output_area=None,
+    ):
+        pass
+
+    @abstractmethod
+    def check_data(self) -> None:
+        pass
+
+    @abstractmethod
+    def get_X_y(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+        pass
+
+    @abstractmethod
+    def validate(self):
+        pass
+
+    @abstractmethod
+    def sleep(self, duration: float = 2.0):
+        pass
+
+    @abstractmethod
+    def warn(self, msg: str):
+        pass
+
+    @abstractmethod
+    def debug_report(self):
+        pass
+
+    @abstractmethod
+    def __repr__(self):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class Data(DataAbstract):
     def __init__(
         self,
         options: Options,
@@ -67,7 +113,7 @@ class DataAbstract(ABC):
         time.sleep(duration)
 
     def warn(self, msg: str):
-        print(f"[DataAbstract] Warning: {msg}")
+        print(f"[Data] Warning: {msg}")
 
     def validate(self):
         # Check for missing columns and correct dtypes
@@ -111,21 +157,21 @@ class DataAbstract(ABC):
         return X_train, X_test, y_train, y_test
 
     def debug_report(self):
-        print("\n[DataAbstract] DataFrame dtypes:")
+        print("\n[Data] DataFrame dtypes:")
         print(self.df.dtypes)
-        print("[DataAbstract] Numerical columns:", self.numerical_cols)
-        print("[DataAbstract] Categorical columns:", self.categorical_cols)
-        print("[DataAbstract] Target column:", self.target_name)
-        print("[DataAbstract] First few rows:")
+        print("[Data] Numerical columns:", self.numerical_cols)
+        print("[Data] Categorical columns:", self.categorical_cols)
+        print("[Data] Target column:", self.target_name)
+        print("[Data] First few rows:")
         print(self.df.head())
 
     def __repr__(self):
-        return f"DataAbstract(target_name={self.target_name}, numerical_cols={self.numerical_cols}, categorical_cols={self.categorical_cols})"
+        return f"Data(target_name={self.target_name}, numerical_cols={self.numerical_cols}, categorical_cols={self.categorical_cols})"
 
     # Add more utility methods as needed
     def __str__(self):
         t = f"""
-        [DataAbstract]
+        [Data]
         Shape : {self.df.shape}
         Numerical columns : {self.numerical_cols}
         Categorical columns : {self.categorical_cols}
@@ -136,7 +182,7 @@ class DataAbstract(ABC):
 
 
 # -- Data Preparation
-def get_data_abstract_with_options(options, df, output_area=None) -> DataAbstract:
+def get_data_with_options(options, df, output_area=None) -> Data:
 
     if not isinstance(options.data, type(None)):
         df = options.data
@@ -144,7 +190,7 @@ def get_data_abstract_with_options(options, df, output_area=None) -> DataAbstrac
         time.sleep(2)
     print_report_initial(df, options, output_area=output_area)
 
-    return DataAbstract(
+    return Data(
         options=options,
         df=df,
         target_name=options.target_name,

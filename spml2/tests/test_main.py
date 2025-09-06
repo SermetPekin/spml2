@@ -3,7 +3,6 @@ import pytest
 import pandas as pd
 from spml2.options import Options
 from spml2.utils.general import get_data, local_print, local_print_df
-from spml2 import Process, Process_cache
 
 # --- User-editable configuration ---
 from pathlib import Path
@@ -98,9 +97,7 @@ def test_get_data_test_mode(monkeypatch):
         data = None
 
     # Patch get_test_data to return a DataFrame
-    monkeypatch.setattr(
-        "spml2.utils.get_test_data", lambda options: pd.DataFrame({"x": [1, 2]})
-    )
+    monkeypatch.setattr("spml2.utils.general.get_test_data", lambda options: df)
     df = get_data(DummyOptions())
     assert isinstance(df, pd.DataFrame)
     assert "target" in df.columns

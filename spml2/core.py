@@ -262,14 +262,14 @@ class ActionAbstract:
         local_print(msg, output_area=self.output_area)
 
     def execute(self) -> "ActionAbstract":
-        from .data.abstract import get_data_abstract_with_options, DataAbstract
+        from spml2.data.abstract import get_data_with_options, DataAbstract
 
         if self.name == "Fresh":
             save_pip_freeze(self.options)
 
         df = self.get_df()
 
-        self.data_abstract: DataAbstract = get_data_abstract_with_options(
+        self.data_abstract: DataAbstract = get_data_with_options(
             self.options, df, self.output_area
         )
 

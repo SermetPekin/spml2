@@ -12,7 +12,7 @@ from spml2.options import Options
 from spml2.core import Process, Process_cache
 from spml2.utils.parque_utils import df_to_stata
 from spml2.utils.utils_init import get_example_data2
-from spml2.data.abstract import DataAbstract
+from spml2.data.abstract import DataAbstract, Data
 
 
 def get_preprocessor(options: Options) -> ColumnTransformer:
@@ -83,6 +83,6 @@ models = {
 def test_process2():
     global options
     df = get_example_data2()
-    df, options = DataAbstract.check_data2(df, options)
+    df, options = Data.check_data2(df, options)
     options.pipeline = make_test_pipeline(options)
     Process(options, models)
