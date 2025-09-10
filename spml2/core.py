@@ -26,6 +26,8 @@ from sklearn.metrics import (
     roc_curve,
 )
 from sklearn.compose import ColumnTransformer
+from sklearn.metrics import matthews_corrcoef, average_precision_score
+
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.model_selection import GridSearchCV
@@ -174,6 +176,7 @@ def evaluate_model(
             y_proba = model.decision_function(X_test)
         except AttributeError:
             y_proba = None
+
     metrics = {
         "F1 Score": f1_score(
             y_test, y_pred, average="binary" if len(np.unique(y_test)) == 2 else "macro"
@@ -182,6 +185,9 @@ def evaluate_model(
         "Classification Report": classification_report(
             y_test, y_pred, output_dict=True
         ),
+
+        "MCC": matthews_corrcoef(y_test, y_pred),
+        "PR AUC": average_precision_score(y_test, y_proba) if y_proba is not None else None,
     }
     if y_proba is not None:
         try:
@@ -230,12 +236,12 @@ class ActionAbstract:
     def shap_plots(self, model: Any, X: pd.DataFrame, result_name: str):
         if not self.options.shap_plots:
             return
-        from .shap_local import ShapTree, ShapLinear, ShapAuto
+        from spml2.plots.shap_local import ShapTree, ShapLinear, ShapAuto
 
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
         rows = self.options.shap_sample_size
-        explainer = ShapAuto(model, X.head(rows))
+        explainer = ShapAuto(model, X.head(rows) , options=self.options)
         try:
             explainer.summary_plot(
                 save_path=folder / f"shap_summary_{result_name}.png",
@@ -349,10 +355,12 @@ class ActionAbstract:
             model_results_dict = {
                 "Model": model_name,
                 "Best Params": str(best_params),
-                "ROC AUC": metrics["ROC AUC"],
-                "F1 Score": metrics["F1 Score"],
-                "Confusion Matrix": metrics["Confusion Matrix"],
-                "Classification Report": metrics["Classification Report"],
+                "ROC AUC": metrics.get("ROC AUC", None),
+                "F1 Score": metrics.get("F1 Score", None),
+                "MCC": metrics.get("MCC", None),
+                "PR AUC": metrics.get("PR AUC", None),
+                "Confusion Matrix": metrics.get("Confusion Matrix", None),
+                "Classification Report": metrics.get("Classification Report", None),
                 "Feature Importance": getattr(
                     best_model.named_steps["model"], "feature_importances_", None
                 ),
