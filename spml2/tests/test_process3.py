@@ -21,6 +21,7 @@ def is_windows():
     return os.name == 'nt'
 
 @pytest.mark.skipif(is_windows(), reason= "On windows passing this cause it is too long")
+@pytest.mark.timeout(300)
 def test_process_initial():
     proc = subprocess.Popen(
         [sys.executable, "-m", "spml2.cli", "init", "-f"],
