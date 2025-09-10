@@ -104,8 +104,14 @@ class ShapAuto(ShapAbstract):
             return shap.LinearExplainer(self.model, self.X)
         else:
             # Fallback to KernelExplainer
-            sample_size = min(100, len(self.options.get('shap_sample_size', 100) if self.options else 100))
-            background = self.X.sample(n=min(sample_size, len(self.X)), random_state=self.options.get('random_state', 42)) if isinstance(self.X, pd.DataFrame) else self.X[:sample_size]
+            sample_size = 100   
+            random_state = 42
+            if hasattr(self.options, 'shap_sample_size'):
+                sample_size = min(100, self.options.shap_sample_size)
+
+            if hasattr(self.options, 'random_state'):
+                random_state = self.options.random_state
+            background = self.X.sample(n=min(sample_size, len(self.X)), random_state=random_state) if isinstance(self.X, pd.DataFrame) else self.X[:sample_size]
             return shap.KernelExplainer(self.model.predict, background)
 
 
