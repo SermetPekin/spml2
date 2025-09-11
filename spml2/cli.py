@@ -4,9 +4,7 @@ from rich import print
 import os
 from pathlib import Path
 import warnings
-
 from spml2.utils.utils_init import create_example_files
-
 
 warnings.filterwarnings("ignore")
 

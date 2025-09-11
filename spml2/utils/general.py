@@ -136,7 +136,6 @@ def create_parque_files_for_folder(folder):
 
 
 def initial_data_check(options: Options):
-
     print(
         "initial check for data formats. This will create Parquet file for stata files"
     )
@@ -154,7 +153,6 @@ def save_df_to_parquet(df, filepath, compression="snappy"):
 def get_original_data(options: Options) -> pd.DataFrame:
     if not isinstance(options.data, type(None)):
         return options.data
-
     real_df_path = Path(options.real_df_path)
     suffix = real_df_path.suffix.lower()
     if suffix == ".dta":

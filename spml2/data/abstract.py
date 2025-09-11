@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 import time
-
 import pandas as pd
 import warnings
-
 from spml2.data.processing import prepare_data, set_numerical_categ_cols
 from spml2.options import Options
 from spml2.utils.general import (
@@ -80,7 +78,6 @@ class Data(DataAbstract):
         self.validate()
 
     def check_data(self) -> None:
-
         self.df, self.options = set_numerical_categ_cols(
             self.df, self.options, output_area=self.output_area
         )
@@ -123,7 +120,6 @@ class Data(DataAbstract):
         ]
         if missing_num:
             self.warn(f"Missing numerical columns: {missing_num}")
-
         if missing_cat:
             self.warn(f"Missing categorical columns: {missing_cat}")
         for col in self.numerical_cols:
@@ -150,7 +146,6 @@ class Data(DataAbstract):
         return df, options
 
     def get_X_y(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-
         X_train, X_test, y_train, y_test = prepare_data(
             self.df, self.options, output_area=self.output_area
         )
@@ -176,20 +171,17 @@ class Data(DataAbstract):
         Numerical columns : {self.numerical_cols}
         Categorical columns : {self.categorical_cols}
         Target column : {self.target_name}
-
         """
         return t
 
 
 # -- Data Preparation
 def get_data_with_options(options, df, output_area=None) -> Data:
-
     if not isinstance(options.data, type(None)):
         df = options.data
         warnings.warn("Using DataFrame provided in options.data")
         time.sleep(2)
     print_report_initial(df, options, output_area=output_area)
-
     return Data(
         options=options,
         df=df,

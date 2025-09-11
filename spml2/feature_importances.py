@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 import numpy as np
 import pandas as pd
-
 from spml2.utils.general import local_print, local_print_df
 from spml2.options import Options
 
@@ -81,7 +80,6 @@ def save_feature_importances_basic(
 ):
     importances = FeatureImportancesBasic(output_area).get(best_model, None, None, None)
     result_name = f"feature_importances_basic_{result_name}"
-
     if isinstance(importances, np.ndarray):
         if importances.shape[0] != len(features):
             print(
@@ -92,15 +90,12 @@ def save_feature_importances_basic(
             {"features": features, "importances": importances}
         )
         return save_feature_df(feature_importances, result_name, options)
-
     if isinstance(importances, pd.DataFrame):
         return save_feature_df(importances, result_name, options)
-
     if importances is not None:
         feature_importances = pd.DataFrame(
             {"features": features, "importances": importances}
         )
-
         return save_feature_df(feature_importances, result_name, options)
     else:
         print(f"Model {result_name} does not have feature_importances_ attribute.")
@@ -152,7 +147,6 @@ def save_feature_importances(
     fncs = [save_feature_importances_SKLEARN]  # save_feature_importances_basic
     if options._dev:
         fncs = [save_feature_importances_SKLEARN, save_feature_importances_basic]  #
-
     for fnc in fncs:
         try:
             fnc(
@@ -166,5 +160,4 @@ def save_feature_importances(
             )
         except Exception as e:
             if options.raise_error and options.debug and options._dev:
-
                 raise e

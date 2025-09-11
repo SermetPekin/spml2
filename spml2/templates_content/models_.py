@@ -3,8 +3,8 @@ models_content = """\n
 # This file will be imported in the main file while running
 # either with WEB UI or CLI and should not run any long process
 # by itself.
-# -> # before model name means this model will be excluded from the pipeline
-# example #LogisticRegression-L2 below will be excluded from the pipeline
+# Use 'include': True/False to control pipeline inclusion.
+# For imbalanced data, consider metrics like PR AUC, MCC, and minority class recall.
 import numpy as np
 from sklearn.model_selection import (
     train_test_split,
@@ -18,6 +18,7 @@ from sklearn.metrics import (
     f1_score,
     confusion_matrix,
     classification_report,
+    recall_score,  # For minority class recall
 )
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline
@@ -30,6 +31,7 @@ import warnings
 warnings.filterwarnings("ignore")
 models = {
     "XGBoost": {
+        "include": True,
         "model": XGBClassifier(random_state=42, n_jobs=-1, eval_metric="auc"),
         "params": {
             "model__n_estimators": [10, 50, 100, 200, 400, 750, 1000],
@@ -43,6 +45,7 @@ models = {
         },
     },
     "RandomForest": {
+        "include": True,
         "model": RandomForestClassifier(random_state=42, n_jobs=-1),
         "params": {
             "model__n_estimators": [100, 200, 300, 500],
@@ -54,38 +57,23 @@ models = {
             "model__max_features": ["sqrt", "log2", None],
         },
     },
-    "#LogisticRegression-L2": {  # L2
-        "model": LogisticRegression(random_state=42, n_jobs=-1, max_iter=1000),
-        "params": {
-            "model__C": [0.001, 0.01, 0.1, 1, 10],
-            "model__solver": ["lbfgs"],
-            "model__class_weight": ["balanced"],
-            "model__max_iter": [1000],
-        },
-    },
     "LogisticRegression-L2": {
+        "include": True,
         "model": LogisticRegression(random_state=42, n_jobs=-1, max_iter=2000),
         "params": {
-            "model__penalty": [
-                "l2",
-            ],
+            "model__penalty": ["l2"],
             "model__C": [0.001, 0.01, 0.1, 1, 10],
-            "model__solver": [
-                "lbfgs",
-                "saga",
-                "newton-cg",
-            ],
+            "model__solver": ["lbfgs", "saga", "newton-cg"],
             "model__class_weight": ["balanced"],
             "model__max_iter": [1000],
             "model__tol": [0.0001, 0.001],
         },
     },
     "LogisticRegression-L1": {
+        "include": True,
         "model": LogisticRegression(random_state=42, n_jobs=-1, max_iter=2000),
         "params": {
-            "model__penalty": [
-                "l1",
-            ],  #
+            "model__penalty": ["l1"],
             "model__C": [0.001, 0.01, 0.1, 1, 10],
             "model__solver": ["saga"],
             "model__class_weight": ["balanced"],
@@ -93,6 +81,7 @@ models = {
         },
     },
     "KNN": {
+        "include": True,
         "model": KNeighborsClassifier(n_jobs=-1),
         "params": {
             "model__n_neighbors": [3, 5, 7],
@@ -101,10 +90,12 @@ models = {
         },
     },
     "NaiveBayes": {
+        "include": True,
         "model": GaussianNB(),
         "params": {"model__var_smoothing": np.logspace(-12, -6, 4)},
     },
     "SGDClassifier": {
+        "include": True,
         "model": SGDClassifier(random_state=42, loss="log_loss", penalty="elasticnet"),
         "params": {
             "model__eta0": [0.001, 0.01, 0.1],
@@ -112,6 +103,16 @@ models = {
             "model__l1_ratio": [0.15, 0.5, 0.85],
             "model__max_iter": [1000, 2000],
             "model__learning_rate": ["optimal", "adaptive"],
+        },
+    },
+    "LogisticRegression-L2-EXCLUDE": {  # Example excluded model
+        "include": False,
+        "model": LogisticRegression(random_state=42, n_jobs=-1, max_iter=1000),
+        "params": {
+            "model__C": [0.001, 0.01, 0.1, 1, 10],
+            "model__solver": ["lbfgs"],
+            "model__class_weight": ["balanced"],
+            "model__max_iter": [1000],
         },
     },
 }

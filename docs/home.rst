@@ -23,7 +23,7 @@ Installation
 
 .. code-block:: bash
 
-   pip install spml2-mltools
+   pip install --upgrade spml2-mltools
 
 Quick Start
 -----------

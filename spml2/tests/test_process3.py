@@ -2,7 +2,8 @@ from spml2.options import Options
 import subprocess
 import sys
 import os
-import pytest 
+import pytest
+
 
 def make_debug_true():
     file_name = "options_user.py"
@@ -17,11 +18,13 @@ def make_debug_true():
     with open(file_name, "w+") as f:
         f.write(content)
 
-def is_windows():
-    return os.name == 'nt'
 
-@pytest.mark.skipif(is_windows(), reason= "On windows passing this cause it is too long")
-@pytest.mark.timeout(300)
+def is_windows():
+    return os.name == "nt"
+
+
+@pytest.mark.skipif(is_windows(), reason="On windows passing this cause it is too long")
+@pytest.mark.timeout(10)
 def test_process_initial():
     proc = subprocess.Popen(
         [sys.executable, "-m", "spml2.cli", "init", "-f"],
@@ -34,13 +37,10 @@ def test_process_initial():
     if stderr:
         print("Error:", stderr)
     assert proc.returncode == 0
-
     assert os.path.exists("input/example.dta")
     assert os.path.exists("Output")
     assert os.path.exists("input/example.dta")
-
     make_debug_true()
-
     proc = subprocess.Popen(
         [sys.executable, "spml2_main.py"],
         stdout=subprocess.PIPE,
@@ -51,4 +51,3 @@ def test_process_initial():
     print(stdout)
     if stderr:
         print("Error:", stderr)
-

@@ -6,7 +6,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Tuple, Dict
-
 import numpy as np
 from rich import print
 from sklearn.preprocessing import OneHotEncoder
@@ -15,7 +14,6 @@ from sklearn.model_selection import (
     StratifiedKFold,
     RandomizedSearchCV,
 )
-
 from spml2.options import Options
 from spml2.utils.general import (
     print_report_initial,
@@ -72,19 +70,16 @@ def convert_categorical_cols_str_type(
 
 
 def limit_df_if_both_given(df: pd.DataFrame, options: Options):
-
     current_cols = df.columns.tolist()
     given_columns = (
         options.numerical_cols + options.categorical_cols + [options.target_name]
     )
     none_cols = set(given_columns) - set(current_cols)
-
     if none_cols:
         msg = f"Warning: The following specified columns are not in the DataFrame and will be ignored: {list(none_cols)}"
         warnings.warn(msg)
         print(msg)
         time.sleep(2)
-
     if options.numerical_cols is not None and options.categorical_cols is not None:
         df = df.loc[
             :, options.numerical_cols + options.categorical_cols + [options.target_name]
@@ -93,7 +88,6 @@ def limit_df_if_both_given(df: pd.DataFrame, options: Options):
 
 
 def assert_numerical_cols(df: pd.DataFrame, options: Options):
-
     # Assert all numerical columns are numeric
     for col in options.numerical_cols:
         if not pd.api.types.is_numeric_dtype(df[col]):
@@ -125,7 +119,6 @@ def assert_numerical_cols(df: pd.DataFrame, options: Options):
 def set_numerical_categ_cols(
     df: pd.DataFrame, options: Options, output_area: Any = None
 ):
-
     df[options.target_name] = pd.to_numeric(df[options.target_name], downcast="integer")
     print("\n[DEBUG] DataFrame dtypes:")
     print(df.dtypes)
@@ -156,22 +149,18 @@ def set_numerical_categ_cols(
             for col in df.columns
             if col not in options.categorical_cols and col != options.target_name
         ]
-
     convert_categorical_cols_str_type(df, options)
     limit_df_if_both_given(df, options)
-
     print("[DEBUG] Numerical columns:", options.numerical_cols)
     print("[DEBUG] Categorical columns:", options.categorical_cols)
     print("[DEBUG] Target column:", options.target_name)
     assert_numerical_cols(df, options)
-
     return df, options
 
 
 def prepare_data(
     df: pd.DataFrame, options: Options, output_area: Any = None
 ) -> tuple[pd.Series, pd.Series, pd.DataFrame]:
-
     print_report_initial(df, options, output_area=output_area)
     target_name_was = options.target_name
     if options.target_name is None:
@@ -190,7 +179,6 @@ def prepare_data(
         target_values_str = ", ".join(map(str, (list(target_values[0:3]) + ["..."])))
         msg += f"\nTarget column '{options.target_name}' is not binary (unique values: {target_values_str}). Please provide a binary target column."
         raise TargetColumnNotBinary(msg)
-
     X = df.drop(options.target_name, axis=1)
     y = df[options.target_name]
     random_state = options.random_state
@@ -209,5 +197,4 @@ def prepare_data(
             test_size=options.test_ratio,
             random_state=random_state,
         )
-
     return X_train, X_test, y_train, y_test

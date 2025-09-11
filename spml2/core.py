@@ -27,7 +27,6 @@ from sklearn.metrics import (
 )
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import matthews_corrcoef, average_precision_score
-
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.model_selection import GridSearchCV
@@ -100,7 +99,6 @@ def get_pipeline(options: Options, preprocessor: Any, model: Any) -> ImbPipeline
         options._given_pipeline = copy.deepcopy(options.pipeline)
     else:
         options._given_pipeline = None
-
     if options._given_pipeline is None:
         options.pipeline = ImbPipeline(
             [
@@ -151,7 +149,6 @@ def train_and_search(
     options: Options,
     param_grid: dict,
 ) -> tuple[Any, Any, dict]:
-
     options = get_pipeline(options, preprocessor, model)
     check_pipeline(options)
     search = get_search_type(options, param_grid)
@@ -176,7 +173,6 @@ def evaluate_model(
             y_proba = model.decision_function(X_test)
         except AttributeError:
             y_proba = None
-
     metrics = {
         "F1 Score": f1_score(
             y_test, y_pred, average="binary" if len(np.unique(y_test)) == 2 else "macro"
@@ -185,9 +181,10 @@ def evaluate_model(
         "Classification Report": classification_report(
             y_test, y_pred, output_dict=True
         ),
-
         "MCC": matthews_corrcoef(y_test, y_pred),
-        "PR AUC": average_precision_score(y_test, y_proba) if y_proba is not None else None,
+        "PR AUC": (
+            average_precision_score(y_test, y_proba) if y_proba is not None else None
+        ),
     }
     if y_proba is not None:
         try:
@@ -217,7 +214,6 @@ class ActionAbstract:
     def get_preprocessor(
         self, options: Options, categorical_cols: list
     ) -> ColumnTransformer:
-
         return ColumnTransformer(
             transformers=[
                 ("num", StandardScaler(), options.numerical_cols),
@@ -241,7 +237,7 @@ class ActionAbstract:
         folder = self.options.output_folder / "graphs"
         folder.mkdir(parents=True, exist_ok=True)
         rows = self.options.shap_sample_size
-        explainer = ShapAuto(model, X.head(rows) , options=self.options)
+        explainer = ShapAuto(model, X.head(rows), options=self.options)
         try:
             explainer.summary_plot(
                 save_path=folder / f"shap_summary_{result_name}.png",
@@ -253,9 +249,12 @@ class ActionAbstract:
             else:
                 warnings.warn(f"Shap summary plot failed for {result_name}: {e}")
 
-    def should_I_pass(self, model_name: str) -> bool:
+    def should_I_pass(self, model_name: str, config: dict[str, Any]) -> bool:
         if str(model_name).strip().startswith("#") or "cancelled" in model_name.lower():
             self.print(f"\nPassing {model_name}\n")
+            return True
+        if not config.get("include", True):
+            self.print(f"\nPassing {model_name} as include is False\n")
             return True
         return False
 
@@ -272,25 +271,19 @@ class ActionAbstract:
 
         if self.name == "Fresh":
             save_pip_freeze(self.options)
-
         df = self.get_df()
-
         self.data_abstract: DataAbstract = get_data_with_options(
             self.options, df, self.output_area
         )
-
         X_train, X_test, y_train, y_test = self.data_abstract.get_X_y()
         self.df_final = self.data_abstract.df
-
         preprocessor = self.get_preprocessor(
             self.options, self.data_abstract.categorical_cols
         )
         features = X_train.columns.tolist()
-
         results = []
         for model_name, config in self.models.items():
-
-            if self.should_I_pass(model_name):
+            if self.should_I_pass(model_name, config):
                 continue
             if self.options.debug:
                 if model_name != self.test_name_when_debug(self.models):
@@ -304,7 +297,6 @@ class ActionAbstract:
             result_name = self.get_result_name(model_name)
             save_model(best_model, result_name, self.options)
             save_metrics(metrics, result_name, self.options)
-
             # Shap Summary plot
             if self.options.shap_plots:
                 arr = best_model.named_steps["preprocessor"].transform(X_test)
@@ -326,12 +318,10 @@ class ActionAbstract:
                                 feature_names += cols
                         else:
                             feature_names += cols
-
                 X_test_processed = pd.DataFrame(arr, columns=feature_names)
                 self.shap_plots(
                     best_model.named_steps["model"], X_test_processed, result_name
                 )
-
             # ROC AUC plot
             if self.options.roc_plots:
                 plot_roc_curve(
@@ -347,11 +337,9 @@ class ActionAbstract:
             if duration is None:
                 duration = " "
             else:
-
                 rounded_seconds = round(duration.total_seconds())
                 duration = f" : {rounded_seconds:.2f} seconds"
             self.print(f"\n{model_name}{duration} \n ")
-
             model_results_dict = {
                 "Model": model_name,
                 "Best Params": str(best_params),
@@ -385,7 +373,6 @@ class ActionAbstract:
                 self.options,
             )
             results.append(model_results_dict)
-            time.sleep(1)
         if self.name == "Fresh":
             results_report(
                 results,
@@ -407,7 +394,6 @@ class ActionFresh(ActionAbstract):
     def get_best_model(
         self, config, preprocessor, X_train, y_train, options, model_name
     ):
-
         best_model, duration, best_params = train_and_search(
             config["model"], preprocessor, X_train, y_train, options, config["params"]
         )

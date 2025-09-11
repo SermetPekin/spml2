@@ -70,7 +70,6 @@ def test_process_with_custom_pipeline_and_search_type():
         data=get_example_data2(),
     )
     options.pipeline = make_test_pipeline(options)
-
     models = {
         "XGBoost": {
             "model": XGBClassifier(random_state=42, n_jobs=-1, eval_metric="auc"),
