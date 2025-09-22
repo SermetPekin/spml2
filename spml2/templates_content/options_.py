@@ -36,6 +36,7 @@ SEARCH_KWARGS = {"verbose": 1}
 SHAP_PLOTS = False  # Enable SHAP plots
 SHAP_SAMPLE_SIZE = 100  # Number of samples for SHAP plots
 ROC_PLOTS = True  # Enable ROC plots
+FEATURE_IMPORTANCES = True 
 # DEBUG/TEST SETTINGS
 TEST_MODE = False  # Enable test mode for quick runs
 DEBUG = False  # Enable debug mode for extra checks
@@ -63,6 +64,7 @@ options = Options(
     search_kwargs=SEARCH_KWARGS,
     random_state=RANDOM_STATE,
     stratify=STRATIFY,
+    feature_importances=FEATURE_IMPORTANCES,
 )
 print(options)
 """
