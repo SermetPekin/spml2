@@ -49,6 +49,7 @@ class Options:
         roc_plots: bool = True,
         shap_sample_size: int = 100,
         shap_summary_plot_type: str = "dot",  # "layered_violin"
+        feature_importances : bool = True , 
     ):
         # General
         self.test_mode = test_mode
@@ -84,6 +85,7 @@ class Options:
         self.roc_plots = roc_plots
         self.shap_sample_size = shap_sample_size
         self.shap_summary_plot_type = shap_summary_plot_type
+        self.feature_importances = feature_importances 
         # Derived attributes
         self.test_file_name = self.real_df_path.with_stem(
             f"small_df_{self.test_df_size}" + self.real_df_path.stem
