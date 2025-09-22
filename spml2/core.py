@@ -355,15 +355,16 @@ class ActionAbstract:
                 "duration": str(duration),
                 "nf_estimator": result_name,
             }
-            save_feature_importances(
-                best_model,
-                self.options,
-                result_name,
-                features=features,
-                X_test=X_test,
-                y_test=y_test,
-                output_area=self.output_area,
-            )
+            if self.options.feature_importances:
+                save_feature_importances(
+                    best_model,
+                    self.options,
+                    result_name,
+                    features=features,
+                    X_test=X_test,
+                    y_test=y_test,
+                    output_area=self.output_area,
+                )
             model_results_df = pd.DataFrame([model_results_dict])
             print(model_results_df)
             save_results_individual(
