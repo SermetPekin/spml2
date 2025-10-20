@@ -69,7 +69,7 @@ spml web
 ---
 
 ## CITE
-If you find spml2-mltools helpful in your research cite as:
+If you use spml2-mltools in your research cite as:
 ```
 @misc{spml2-mltools,
   author = {Sermet Pekin},
