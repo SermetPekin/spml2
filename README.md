@@ -68,10 +68,22 @@ spml web
 
 ---
 
+## CITE
+If you find spml2-mltools helpful in your research cite as:
+```
+@misc{spml2-mltools,
+  author = {Sermet Pekin},
+  title = {spml2-mltools:  a convenient package for applying machine learning workflows with a Streamlit app, generating Excel outputs, and visualizations.},
+  year = {2025},
+  publisher = {GitHub},
+  url = {https://github.com/SermetPekin/spml2}
+}
+```
+
 ## Documentation
 
 - [Homepage](https://github.com/SermetPekin/spml2)
-- [Documentation](https://github.com/SermetPekin/spml2)
+- [Documentation](spml2.readthedocs.io/en/latest/home.html)
 - [Issues](https://github.com/SermetPekin/spml2/issues)
 - [Changelog](https://github.com/SermetPekin/spml2/releases)
 
